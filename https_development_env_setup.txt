@@ -1,0 +1,28 @@
+# Generate a Self-Signed Certificate for localhost
+openssl req -x509 -out localhost.pem -keyout localhost-key.pem \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+  printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+
+# Move Certificates to a Trusted Location
+# For example, create a folder named "certs" in your project directory
+mv localhost.pem localhost-key.pem path/to/certs/  # no movement needed for local certs
+
+# Configure Local Non-Secure Server (Example for Python http.server)
+python3 -m http.server 8000 --bind 127.0.0.1 --cgi 
+
+# Configure Local Secure Server (Example for Python http.server)
+python3 devHttpsServer.py
+
+
+# Connect browser to Non-Secure Server
+http://localhost:8000
+
+# Connect browser to Secure Server
+https://localhost:8000
+
+# Click Advanced and proceed anyway
+# took a long time to connect and failed to respond initially
+# System Preferences::Network::Advanced::Proxies  
+# Bypass proxy settings for these Hosts & Domains: added localhost
+# Pressed Ok then Apply button on System Preferences::Network pane
