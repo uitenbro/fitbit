@@ -5,15 +5,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <!-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> -->
+
   <title>Fitbit API Example</title>
 
   <script src="fitbitAuth.js"></script>
   <script src="fitbitApi.js"></script>
 
 </head>
-<body onload="handleAuthenteFitbit()">
+<body onload="handleAuthenticateFitbit()">
+  <script>
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1);
+    const currentDate = yesterday.toISOString().split('T')[0];
+  </script>
   <button onclick="authenticateFitbit()">Authenticate</button>
-  <button onclick="getFitbitProfile()">Get Profile</button>
+
+  <button onclick="getProfile()">Get Profile</button>
+  <button onclick="getActivityLogs(currentDate)">Get Activity Logs</button>
+  <button onclick="getSleepLogs(currentDate)">Get Sleep Logs</button>
+  <button onclick="getFoodLogs(currentDate)">Get Food Logs</button>
+
 
 </body>
 </html>
