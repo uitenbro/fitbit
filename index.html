@@ -15,18 +15,56 @@
 
 </head>
 <body onload="handleAuthenticateFitbit()">
+
+  <label for="startDate">Start Date:</label>
+  <input type="date" id="startDate" name="startDate">
+
+  <label for="duration">Duration (days):</label>
+  <input type="number" id="duration" name="duration" min="1" value="90"> 
+  <br/>
+  <button onclick="authenticateFitbit()">Authenticate</button>
+  <button onclick="getProfile()">Get Profile</button>
+  <br/>
+
+  <button onclick="getCalorieLogs(getStartDate(), getDuration())">Get Calories Burned Logs</button>
+  <button onclick="getAzmLogs(getStartDate(), getDuration())">Get AZM Logs</button>
+  <br/>
+  <!-- Button for getting steps logs -->
+  <button onclick="getStepLogs(getStartDate(), getDuration())">Get Step Logs</button>
+
+    <!-- Button for getting distance logs -->
+  <button onclick="getDistanceLogs(getStartDate(), getDuration())">Get Distance Logs</button>
+
+  <!-- Button for getting minutes sedentary logs -->
+  <button onclick="getMinutesSedentaryLogs(getStartDate(), getDuration())">Get Minutes Sedentary Logs</button> <!-- 693 for min -->
+
+  <!-- Button for getting minutes lightly active logs -->
+  <button onclick="getMinutesLightlyActiveLogs(getStartDate(), getDuration())">Get Minutes Lightly Active Logs</button>
+
+  <!-- Button for getting minutes fairly active logs -->
+  <button onclick="getMinutesFairlyActiveLogs(getStartDate(), getDuration())">Get Minutes Fairly Active Logs</button>
+
+  <!-- Button for getting minutes very active logs -->
+  <button onclick="getMinutesVeryActiveLogs(getStartDate(), getDuration())">Get Minutes Very Active Logs</button>
+
+  <br/>
+  <button onclick="getFoodLogs(getStartDate(), getDuration())">Get Food Logs</button>
+  <button onclick="getMacroLogs(getStartDate(), getDuration())">Get Macro Logs</button> <!-- 1 day only -->
+
+  <button onclick="getSleepLogs(getStartDate(), getDuration())">Get Sleep Logs</button> <!-- 100 records -->
+  <br/>
+
+  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
+  <!-- <button onclick="getFatWeightLogs(getStartDate(), getDuration())">Get Fat Weight Logs</button> -->
+  <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
+  <!-- Add more buttons for other Fitbit APIs as needed -->
   <script>
     const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(today.getDate() - 1);
-    const currentDate = yesterday.toISOString().split('T')[0];
+    const oneWeekAgo = new Date(today)
+    oneWeekAgo.setDate(today.getDate() - getDuration());
+    const startDateInput = document.getElementById('startDate');
+    startDateInput.valueAsDate = oneWeekAgo;
   </script>
-  <button onclick="authenticateFitbit()">Authenticate</button>
-
-  <button onclick="getProfile()">Get Profile</button>
-  <button onclick="getActivityLogs(currentDate)">Get Activity Logs</button>
-  <button onclick="getSleepLogs(currentDate)">Get Sleep Logs</button>
-  <button onclick="getFoodLogs(currentDate)">Get Food Logs</button>
 
 
 </body>

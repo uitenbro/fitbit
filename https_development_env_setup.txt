@@ -14,15 +14,11 @@ python3 -m http.server 8000 --bind 127.0.0.1 --cgi
 # Configure Local Secure Server (Example for Python http.server)
 python3 devHttpsServer.py
 
-
-# Connect browser to Non-Secure Server
-http://localhost:8000
-
 # Connect browser to Secure Server
 https://localhost:8000
 
 # Click Advanced and proceed anyway
-# took a long time to connect and failed to respond initially
 # System Preferences::Network::Advanced::Proxies  
 # Bypass proxy settings for these Hosts & Domains: added localhost
 # Pressed Ok then Apply button on System Preferences::Network pane
+# Note: took a long time to connect and failed to respond initially
