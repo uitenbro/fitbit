@@ -24,26 +24,38 @@ function handleAuthenticateFitbit() {
 
   // Check if the access token is present in the URL hash
   if (hashParams.access_token) {
-    // Calculate expiration time (if 'expires_in' parameter is present)
     let expirationTime = null;
     if (hashParams.expires_in) {
       const expiresInSeconds = parseInt(hashParams.expires_in, 10);
       const now = new Date();
       expirationTime = new Date().getTime() + expiresInSeconds * 1000; // Convert seconds to milliseconds
     }
-
-    // Store the parsed authentication response in localStorage
+    // create an auth response for storage using the parsed authentication response
     const authResponse = {
       accessToken: hashParams.access_token,
       tokenType: hashParams.token_type,
       expiresAt: expirationTime ? expirationTime : null,
       refreshToken: hashParams.refresh_token,
       userId: hashParams.user_id
-    };
-
-    localStorage.setItem('fitbitAuthResponse', JSON.stringify(authResponse));
-  } else {
-    console.error('Access token not found in URL hash');
+    }
+    // Get the previous Auth Token from storage 
+    var prevAuthResponse = JSON.parse(localStorage.getItem('fitbitAuthResponse'));
+    // If there is a previous token 
+    if (prevAuthResponse) {
+      // If this token is different than the previous one update the token and expiration
+      if (authResponse.accessToken !== prevAuthResponse.accessToken) {
+        // store the new token response      
+        localStorage.setItem('fitbitAuthResponse', JSON.stringify(authResponse));
+        console.log('Stored new access token');
+      }
+    }
+    else { // No previous auth token found so store this token response
+      localStorage.setItem('fitbitAuthResponse', JSON.stringify(authResponse));
+      console.log('Stored initial access token');
+    }
+  }
+  else {
+    console.log('No access token not found in URL hash');
   }
 
   // Continue execution where we left off if there is a stored state
@@ -122,7 +134,7 @@ function executeFunctionByName(functionName, parameters) {
   // Check if the function exists
   if (typeof window[functionName] === 'function') {
     // Execute the function with the parameters
-    console.log("parameters:", ...parameters)
+    //console.log("parameters:", ...parameters)
     window[functionName](...parameters);
   } else {
     console.error(`Function '${functionName}' not found.`);
