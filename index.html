@@ -11,16 +11,22 @@
   <title>Fitbit API Example</title>
 
   <script src="fitbitAuth.js"></script>
-  <script src="fitbitApi.js"></script>
+  <script src="fitbitApi.js"></script> 
+  <script src="planAnalyzerModel.js"></script> 
+  <script src="planAnalyzerDisplay.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> 
+  <script src="chartBuilder.js"></script>
 
 </head>
-<body onload="handleAuthenticateFitbit()">
+<body onload="init()">
+
+  <label for="duration">Duration (days):</label>
+  <input type="number" id="duration" name="duration" min="1" value="15"> 
+  <button onclick="setStartDate()">Set Start Date</button>
 
   <label for="startDate">Start Date:</label>
   <input type="date" id="startDate" name="startDate">
-
-  <label for="duration">Duration (days):</label>
-  <input type="number" id="duration" name="duration" min="1" value="90"> 
   <br/>
   <button onclick="authenticateFitbit()">Authenticate</button>
   <button onclick="getProfile()">Get Profile</button>
@@ -55,17 +61,26 @@
   <br/>
 
   <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
-  <!-- <button onclick="getFatWeightLogs(getStartDate(), getDuration())">Get Fat Weight Logs</button> -->
   <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
+  <button onclick="calculateBodyWeightData()">Calculate Body Weight Data</button>
+
+<br/>
+
   <!-- Add more buttons for other Fitbit APIs as needed -->
   <script>
-    const today = new Date()
-    const oneWeekAgo = new Date(today)
-    oneWeekAgo.setDate(today.getDate() - getDuration());
-    const startDateInput = document.getElementById('startDate');
-    startDateInput.valueAsDate = oneWeekAgo;
+    function setStartDate() {
+      const today = new Date()
+      const startDateCalc = new Date(today)
+      startDateCalc.setDate(today.getDate() - getDuration());
+      const startDateInput = document.getElementById('startDate');
+      startDateInput.valueAsDate = startDateCalc;
+    }
+   setStartDate() 
   </script>
 
+<div id="weightChartArea">
+<canvas id="weightChart"></canvas>
+</div>
 
 </body>
 </html>

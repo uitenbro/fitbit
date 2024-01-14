@@ -94,6 +94,45 @@ function getWeightLogs(startDate, duration) {
 // Function to handle weight data
 function handleWeightLogs(data) {
   console.log('Weight Log data:', data);
+  data['body-weight'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseFloat(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {bodyWeight : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].bodyWeight = value;
+    }
+  });
+}
+
+// Function to get fat percent logs from API
+function getFatPercentLogs(startDate, duration) {
+  if (checkFitBitAccessToken('getWeightLogs', Array.from(arguments))) {
+    const endDate = calculateEndDate(startDate, duration);
+    makeApiRequest(`body/fat/date/${startDate}/${endDate}.json`)
+      .then(data => handleFatPercentLogs(data))
+      .catch(error => console.error('Error getting fat percent:', error));
+  }
+}
+
+// Function to handle fat percent data
+function handleFatPercentLogs(data) {
+  console.log('Fat Percent Log data:', data);
+  data['body-fat'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseFloat(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {fatPercent : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].fatPercent = value;
+    }
+  });
 }
 
 // Function to get daily step log data from API
@@ -195,21 +234,6 @@ function getMinutesVeryActiveLogs(startDate, duration) {
 // Function to handle minutes very active data
 function handleMinutesVeryActiveLogs(data) {
   console.log('Minutes Very Active Log data:', data);
-}
-
-// Function to get fat percent logs from API
-function getFatPercentLogs(startDate, duration) {
-  if (checkFitBitAccessToken('getWeightLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`body/fat/date/${startDate}/${endDate}.json`)
-      .then(data => handleFatPercentLogs(data))
-      .catch(error => console.error('Error getting fat percent:', error));
-  }
-}
-
-// Function to handle weight data
-function handleFatPercentLogs(data) {
-  console.log('Fat Percent Log data:', data);
 }
 
 // Function to get sleep logs from API with duration
