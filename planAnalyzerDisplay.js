@@ -1,8 +1,8 @@
 // planAnalyzerDisplay.js
 
 function init() {
-  handleAuthenticateFitbit(); // Assuming this function is available for authentication
-  initModel(); // Assuming this function is available to initialize the model
+  handleAuthenticateFitbit(); 
+  initModel(); 
   drawAll();
 }
 
@@ -35,5 +35,30 @@ function drawPeriodDetails(startDate) {
 
 // Additional utility functions or UI components can be added based on your requirements
 
-// Example usage:
-// init();
+// Function to get start date from the input
+function getStartDate() {
+  return document.getElementById('startDate').value;
+}
+
+// Function to get duration from the input
+function getDuration() {
+  return parseInt(document.getElementById('duration').value, 10);
+}
+
+// Function to get start date from the input
+function getStartDateCharts() {
+  return document.getElementById('startDateCharts').value;
+}
+
+// Function to get duration from the input
+function getEndDateCharts() {
+  return document.getElementById('endDateCharts').value;
+}
+
+// Function to calculate end date based on start date and duration
+function calculateEndDate(startDate, duration) {
+  const start = new Date(startDate);
+  const end = new Date(start);
+  end.setDate(start.getDate() + duration);
+  return end.toISOString().split('T')[0];
+}

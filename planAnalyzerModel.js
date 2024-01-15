@@ -56,16 +56,6 @@ function calculateProgramInputs(startDate, endDate) {
   // Implement logic to calculate program inputs for the specified period and return individual day data and summary
 }
 
-// Additional utility functions or API queries can be added based on your requirements
-
-// Example usage:
-// initModel();
-// getFitbitData();
-// calculateBodyWeightData();
-// calculateBodyWeightTrends(7);
-// sortBodyWeightTrends('Lose body weight');
-// calculateProgramInputs('2022-01-01', '2022-01-15');
-
 // Function to calculate 7-day moving average for a specific property
 function calculateMovingAverage(property) {
   const dates = Object.keys(fitbitDatastore);
