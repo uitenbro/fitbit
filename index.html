@@ -20,9 +20,11 @@
 
 </head>
 <body onload="init()">
-
+  <button onclick="fitbitDatastore={}">Clear Fitbit Data</button>
+  <button onclick="console.log(fitbitDatastore)">Show Fitbit Data</button>
+  <br/>
   <label for="duration">Duration (days):</label>
-  <input type="number" id="duration" name="duration" min="1" value="15"> 
+  <input type="number" id="duration" name="duration" min="1" value="1094"> 
   <button onclick="setStartDate()">Set Start Date</button>
 
   <label for="startDate">Start Date:</label>
@@ -62,7 +64,14 @@
 
   <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
   <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
+
   <button onclick="calculateBodyWeightData()">Calculate Body Weight Data</button>
+  <br/>
+  <label for="startDateCharts">Chart Start Date:</label>
+  <input type="date" id="startDateCharts" name="startDateCharts" value="2023-11-13">
+  <label for="endDateCharts">Chart End Date:</label>
+  <input type="date" id="endDateCharts" name="endDateCharts" value="2024-01-13">
+  <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts())">Display Charts</button>
 
 <br/>
 
@@ -80,6 +89,9 @@
 
 <div id="weightChartArea">
 <canvas id="weightChart"></canvas>
+</div>
+<div id="fatPercentChartArea">
+<canvas id="fatPercentChartArea"></canvas>
 </div>
 
 </body>

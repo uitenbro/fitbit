@@ -292,6 +292,16 @@ function getDuration() {
   return parseInt(document.getElementById('duration').value, 10);
 }
 
+// Function to get start date from the input
+function getStartDateCharts() {
+  return document.getElementById('startDateCharts').value;
+}
+
+// Function to get duration from the input
+function getEndDateCharts() {
+  return document.getElementById('endDateCharts').value;
+}
+
 // Function to calculate end date based on start date and duration
 function calculateEndDate(startDate, duration) {
   const start = new Date(startDate);
