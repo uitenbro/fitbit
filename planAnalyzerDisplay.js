@@ -20,7 +20,7 @@ function drawBodyWeightDisplay() {
 }
 
 function displayCharts(startDate, endDate) {
-  createCombinedChart(fitbitDatastore, startDate, endDate)
+  createCombinedChart(fitbitDatastore, startDate, endDate, leanWeightBestDates.concat(fatPercentBestDates));
   // createWeightChart(fitbitDatastore, startDate, endDate)
   // createFatPercentChart(fitbitDatastore, startDate, endDate)
 }
@@ -43,6 +43,10 @@ function getStartDate() {
 // Function to get duration from the input
 function getDuration() {
   return parseInt(document.getElementById('duration').value, 10);
+}
+// Function to get period from the input
+function getPeriod() {
+  return parseInt(document.getElementById('period').value, 10);
 }
 
 // Function to get start date from the input
