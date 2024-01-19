@@ -22,6 +22,13 @@
 <body onload="init()">
   <button onclick="fitbitDatastore={}">Clear Fitbit Data</button>
   <button onclick="console.log(fitbitDatastore)">Show Fitbit Data</button>
+
+  <br/>
+  <button onclick="authenticateFitbit()">Authenticate</button>
+  <button onclick="getProfile()">Get Profile</button>
+  <button onclick="getFitbitData()">Get Fitbit Data</button>
+
+  <br/>
   <br/>
   <label for="duration">Duration (days):</label>
   <input type="number" id="duration" name="duration" min="1" value="1094"> 
@@ -30,11 +37,11 @@
   <label for="startDate">Start Date:</label>
   <input type="date" id="startDate" name="startDate">
   <br/>
-  <button onclick="authenticateFitbit()">Authenticate</button>
-  <button onclick="getProfile()">Get Profile</button>
-  <br/>
 
-  <button onclick="getCalorieLogs(getStartDate(), getDuration())">Get Calories Burned Logs</button>
+  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
+  <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
+  <br/>
+  <button onclick="getCaloriesOutLogs(getStartDate(), getDuration())">Get Calories Out Logs</button>
   <button onclick="getAzmLogs(getStartDate(), getDuration())">Get AZM Logs</button>
   <br/>
   <!-- Button for getting steps logs -->
@@ -42,7 +49,25 @@
 
     <!-- Button for getting distance logs -->
   <button onclick="getDistanceLogs(getStartDate(), getDuration())">Get Distance Logs</button>
+  <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button>
 
+  <br/>
+  <p>Set Up and Display Chart<p>
+  <button onclick="calculateBodyWeightData(getPeriod())">Calculate Body Weight Data</button>
+  <label for="period">Period (days):</label>
+  <input type="number" id="period" name="period" min="3" value="5"> 
+  <button onclick="sortBodyWeightTrends()">Sort Trends</button>
+  <br/>
+  <label for="startDateCharts">Chart Start Date:</label>
+  <input type="date" id="startDateCharts" name="startDateCharts" value="2022-05-02">
+  <label for="endDateCharts">Chart End Date:</label>
+  <input type="date" id="endDateCharts" name="endDateCharts" value="2022-06-06">
+  <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts())">Display Charts</button>
+  
+
+  <br/>
+
+  <p>100 day limit</p>
   <!-- Button for getting minutes sedentary logs -->
   <button onclick="getMinutesSedentaryLogs(getStartDate(), getDuration())">Get Minutes Sedentary Logs</button> <!-- 693 for min -->
 
@@ -54,32 +79,13 @@
 
   <!-- Button for getting minutes very active logs -->
   <button onclick="getMinutesVeryActiveLogs(getStartDate(), getDuration())">Get Minutes Very Active Logs</button>
+  <button onclick="getSleepLogs(getStartDate(), getDuration())">Get Sleep Logs</button> <!-- 100 records -->
 
   <br/>
-  <button onclick="getFoodLogs(getStartDate(), getDuration())">Get Food Logs</button>
+  <p>One day at a time</p>
   <button onclick="getMacroLogs(getStartDate(), getDuration())">Get Macro Logs</button> <!-- 1 day only -->
 
-  <button onclick="getSleepLogs(getStartDate(), getDuration())">Get Sleep Logs</button> <!-- 100 records -->
   <br/>
-
-  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
-  <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
-  <br/>
-
-  <button onclick="calculateBodyWeightData(getPeriod())">Calculate Body Weight Data</button>
-  <label for="period">Period (days):</label>
-  <input type="number" id="period" name="period" min="3" value="5"> 
-
-  <br/>
-  <label for="startDateCharts">Chart Start Date:</label>
-  <input type="date" id="startDateCharts" name="startDateCharts" value="2022-05-02">
-  <label for="endDateCharts">Chart End Date:</label>
-  <input type="date" id="endDateCharts" name="endDateCharts" value="2022-06-06">
-  <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts())">Display Charts</button>
-  <button onclick="sortBodyWeightTrends()">Sort Trends</button>
-
-<br/>
-
   <!-- Add more buttons for other Fitbit APIs as needed -->
   <script>
     function setStartDate() {

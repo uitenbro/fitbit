@@ -11,8 +11,22 @@ function initModel() {
 
 function getFitbitData() {
   // Implement logic to fetch Fitbit data and populate the fitbitDatastore
-  getWeightLogs(getStartDate(), getDuration())
-  getFatPercentLogs(getStartDate(), getDuration())
+  Promise.all([getWeightLogs(getStartDate(), getDuration()), 
+    getFatPercentLogs(getStartDate(), getDuration()),
+    getCaloriesOutLogs(getStartDate(), getDuration()),
+    getAzmLogs(getStartDate(), getDuration()),
+    getStepLogs(getStartDate(), getDuration()),
+    getDistanceLogs(getStartDate(), getDuration()),
+    getCaloriesInLogs(getStartDate(), getDuration())])
+    .then(() => {
+    console.log('All operations completed successfully');
+    calculateBodyWeightData(getPeriod())
+    sortBodyWeightTrends()
+    displayCharts(getStartDateCharts(), getEndDateCharts())
+  })
+  .catch(error => {
+    console.error('Error in one or more operations:', error);
+  });
 }
 
 function calculateBodyWeightData(period) {
@@ -49,7 +63,7 @@ function calculateBodyWeightData(period) {
     entry["leanWeightLine"] = bestFitLeanWeight[date];
     
   });
-  console.log(fitbitDatastore)
+  // console.log(fitbitDatastore)
 }
 
 // Function to calculate duration-day moving average for a specific property

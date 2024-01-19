@@ -129,7 +129,6 @@ function createCombinedChart(datastore, startDate, endDate, bestDatesArray = fat
               day: 'yyyy MMM dd', // Use the desired format here
             },
           },
-
         },
         yAxisBodyWeight: {
             type: 'linear',
