@@ -22,69 +22,53 @@
 <body onload="init()">
   <button onclick="fitbitDatastore={}">Clear Fitbit Data</button>
   <button onclick="console.log(fitbitDatastore)">Show Fitbit Data</button>
-
   <br/>
   <button onclick="authenticateFitbit()">Authenticate</button>
   <button onclick="getProfile()">Get Profile</button>
   <button onclick="getFitbitData()">Get Fitbit Data</button>
-
   <br/>
   <br/>
   <label for="duration">Duration (days):</label>
-  <input type="number" id="duration" name="duration" min="1" value="1094"> 
+  <input type="number" id="duration" name="duration" min="1" value="1095"> 
   <button onclick="setStartDate()">Set Start Date</button>
-
   <label for="startDate">Start Date:</label>
   <input type="date" id="startDate" name="startDate">
   <br/>
-
-  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
+ <!--  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
   <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
   <br/>
   <button onclick="getCaloriesOutLogs(getStartDate(), getDuration())">Get Calories Out Logs</button>
   <button onclick="getAzmLogs(getStartDate(), getDuration())">Get AZM Logs</button>
   <br/>
-  <!-- Button for getting steps logs -->
   <button onclick="getStepLogs(getStartDate(), getDuration())">Get Step Logs</button>
-
-    <!-- Button for getting distance logs -->
   <button onclick="getDistanceLogs(getStartDate(), getDuration())">Get Distance Logs</button>
-  <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button>
-
+  <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button> -->
   <br/>
   <p>Set Up and Display Chart<p>
-  <button onclick="calculateBodyWeightData(getPeriod())">Calculate Body Weight Data</button>
+  <br/>
   <label for="period">Period (days):</label>
   <input type="number" id="period" name="period" min="3" value="5"> 
+  <button onclick="calculateBodyWeightData(getPeriod())">Calculate Body Weight Data</button>
   <button onclick="sortBodyWeightTrends()">Sort Trends</button>
   <br/>
   <label for="startDateCharts">Chart Start Date:</label>
   <input type="date" id="startDateCharts" name="startDateCharts" value="2022-05-02">
   <label for="endDateCharts">Chart End Date:</label>
   <input type="date" id="endDateCharts" name="endDateCharts" value="2022-06-06">
-  <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts())">Display Charts</button>
-  
-
+  <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts(), getPeriod())">Display Charts</button>
+  <br/><br/>
+  <label for="startDateCharts">Period Mid-Point:</label>
+  <input type="date" id="midPeriodDate" name="midPeriodDate" value="2022-05-02">
+  <button onclick="getPeriodPlanData()">Get Period Plan Data</button>
   <br/>
-
-  <p>100 day limit</p>
-  <!-- Button for getting minutes sedentary logs -->
-  <button onclick="getMinutesSedentaryLogs(getStartDate(), getDuration())">Get Minutes Sedentary Logs</button> <!-- 693 for min -->
-
-  <!-- Button for getting minutes lightly active logs -->
-  <button onclick="getMinutesLightlyActiveLogs(getStartDate(), getDuration())">Get Minutes Lightly Active Logs</button>
-
-  <!-- Button for getting minutes fairly active logs -->
-  <button onclick="getMinutesFairlyActiveLogs(getStartDate(), getDuration())">Get Minutes Fairly Active Logs</button>
-
-  <!-- Button for getting minutes very active logs -->
-  <button onclick="getMinutesVeryActiveLogs(getStartDate(), getDuration())">Get Minutes Very Active Logs</button>
-  <button onclick="getSleepLogs(getStartDate(), getDuration())">Get Sleep Logs</button> <!-- 100 records -->
-
+  <button onclick="getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Sedentary Logs</button> 
+  <button onclick="getMinutesLightlyActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Lightly Active Logs</button>
+  <button onclick="getMinutesFairlyActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Fairly Active Logs</button>
+  <button onclick="getMinutesVeryActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Very Active Logs</button>
+  <button onclick="getSleepLogs(getStartDateFromMidPoint(), getPeriod())">Get Sleep Logs</button> 
   <br/>
   <p>One day at a time</p>
-  <button onclick="getMacroLogs(getStartDate(), getDuration())">Get Macro Logs</button> <!-- 1 day only -->
-
+  <button onclick="getMacroLogs(getStartDateFromMidPoint(), getPeriod())">Get Macro Logs</button> <!-- 1 day only -->
   <br/>
   <!-- Add more buttons for other Fitbit APIs as needed -->
   <script>

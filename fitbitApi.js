@@ -33,7 +33,6 @@ function makeApiRequest(endpoint, method = 'GET') {
 // Function to get user profile from API
 function getProfile() {
   return new Promise((resolve, reject) => {
-
     if (checkFitBitAccessToken('getProfile', Array.from(arguments))) {
       makeApiRequest('profile.json')
         .then(data => {
@@ -55,14 +54,20 @@ function handleProfile(data) {
 
 // Function to get daily Calories Burned Log data from API
 function getCaloriesOutLogs(startDate, duration) {
-  if (checkFitBitAccessToken('getCaloriesOutLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/calories/date/${startDate}/${endDate}.json`)
-    // makeApiRequest(`activities/activityCalories/date/${startDate}/${endDate}.json`)
-    // https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date-range/#Resource-Options
-      .then(data => handleCaloriesOutLogs(data))
-      .catch(error => console.error('Error getting calories:', error));
-  }
+   return new Promise((resolve, reject) => {   
+    if (checkFitBitAccessToken('getCaloriesOutLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/calories/date/${startDate}/${endDate}.json`)
+       .then(data => {
+          handleCaloriesOutLogs(data);
+          resolve()
+        })
+        .catch(error => console.error('Error getting calories:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle calorie data
@@ -84,14 +89,22 @@ function handleCaloriesOutLogs(data) {
 
 // Function to get AZM Log data from API
 function getAzmLogs(startDate, duration) {
-  if (checkFitBitAccessToken('getAzmLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/active-zone-minutes/date/${startDate}/${endDate}.json`)
-    // makeApiRequest(`activities/activityCalories/date/${startDate}/${endDate}.json`)
-    // https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date-range/#Resource-Options
-      .then(data => handleAzmLogs(data))
-      .catch(error => console.error('Error getting calories:', error));
-  }
+   return new Promise((resolve, reject) => {   
+    if (checkFitBitAccessToken('getAzmLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/active-zone-minutes/date/${startDate}/${endDate}.json`)
+      // makeApiRequest(`activities/activityCalories/date/${startDate}/${endDate}.json`)
+      // https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date-range/#Resource-Options
+        .then(data => {
+          handleAzmLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting calories:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle calorie data
@@ -111,16 +124,12 @@ function handleAzmLogs(data) {
   });  
 }
 
-
 // Function to get weight logs from API
 function getWeightLogs(startDate, duration) {
   return new Promise((resolve, reject) => {
-
     if (checkFitBitAccessToken('getWeightLogs', Array.from(arguments))) {
       const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`body/weight/date/${startDate}/${endDate}.json`)
-      // makeApiRequest(`body/fat/date//date/${startDate}/${endDate}.json`)
-      // https://dev.fitbit.com/build/reference/web-api/body-timeseries/get-body-timeseries-by-date-range/      .then(data => handleActivityLogs(data))
         .then(data => {
           handleWeightLogs(data);
           resolve();
@@ -153,7 +162,6 @@ function handleWeightLogs(data) {
 // Function to get fat percent logs from API
 function getFatPercentLogs(startDate, duration) {
   return new Promise((resolve, reject) => {  
-
     if (checkFitBitAccessToken('getWeightLogs', Array.from(arguments))) {
       const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`body/fat/date/${startDate}/${endDate}.json`)
@@ -189,13 +197,12 @@ function handleFatPercentLogs(data) {
 // Function to get daily step log data from API
 function getStepLogs(startDate, duration) {
   return new Promise((resolve, reject) => {
-
     if (checkFitBitAccessToken('getStepLogs', Array.from(arguments))) {
       const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/steps/date/${startDate}/${endDate}.json`)
         .then(data => {
-          handleStepLogs(data)
-          resolve()
+          handleStepLogs(data);
+          resolve();
         })
         .catch(error => console.error('Error getting steps:', error));
     }
@@ -225,13 +232,12 @@ function handleStepLogs(data) {
 // Function to get daily distance log data from API
 function getDistanceLogs(startDate, duration) {
   return new Promise((resolve, reject) => {
-
     if (checkFitBitAccessToken('getDistanceLogs', Array.from(arguments))) {
       const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/distance/date/${startDate}/${endDate}.json`)
         .then(data => {
-          handleDistanceLogs(data)
-          resolve()
+          handleDistanceLogs(data);
+          resolve();
         })
         .catch(error => console.error('Error getting distance:', error));
     }
@@ -261,13 +267,21 @@ function handleDistanceLogs(data) {
 
 // Function to get daily minutes sedentary log data from API
 function getMinutesSedentaryLogs(startDate, duration) {
+  return new Promise((resolve, reject) => {
   duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-  if (checkFitBitAccessToken('getMinutesSedentaryLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/minutesSedentary/date/${startDate}/${endDate}.json`)
-      .then(data => handleMinutesSedentaryLogs(data))
-      .catch(error => console.error('Error getting minutes sedentary:', error));
-  }
+    if (checkFitBitAccessToken('getMinutesSedentaryLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/minutesSedentary/date/${startDate}/${endDate}.json`)
+        .then(data => {
+          handleMinutesSedentaryLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting minutes sedentary:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle minutes sedentary data
@@ -277,13 +291,21 @@ function handleMinutesSedentaryLogs(data) {
 
 // Function to get daily minutes lightly active log data from API
 function getMinutesLightlyActiveLogs(startDate, duration) {
-  duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-  if (checkFitBitAccessToken('getMinutesLightlyActiveLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/minutesLightlyActive/date/${startDate}/${endDate}.json`)
-      .then(data => handleMinutesLightlyActiveLogs(data))
-      .catch(error => console.error('Error getting minutes lightly active:', error));
-  }
+  return new Promise((resolve, reject) => {
+    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    if (checkFitBitAccessToken('getMinutesLightlyActiveLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/minutesLightlyActive/date/${startDate}/${endDate}.json`)
+        .then(data => {
+          handleMinutesLightlyActiveLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting minutes lightly active:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle minutes lightly active data
@@ -293,24 +315,21 @@ function handleMinutesLightlyActiveLogs(data) {
 
 // Function to get daily minutes fairly active log data from API
 function getMinutesFairlyActiveLogs(startDate, duration) {
-  duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-  if (checkFitBitAccessToken('getMinutesFairlyActiveLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/minutesFairlyActive/date/${startDate}/${endDate}.json`)
-      .then(data => handleMinutesFairlyActiveLogs(data))
-      .catch(error => console.error('Error getting minutes fairly active:', error));
-  }
-}
-
-// Function to get daily minutes fairly active log data from API
-function getMinutesFairlyActiveLogs(startDate, duration) {
-  duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-  if (checkFitBitAccessToken('getMinutesFairlyActiveLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/minutesFairlyActive/date/${startDate}/${endDate}.json`)
-      .then(data => handleMinutesFairlyActiveLogs(data))
-      .catch(error => console.error('Error getting minutes fairly active:', error));
-  }
+  return new Promise((resolve, reject) => {
+    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    if (checkFitBitAccessToken('getMinutesFairlyActiveLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/minutesFairlyActive/date/${startDate}/${endDate}.json`)
+        .then(data => {
+          handleMinutesFairlyActiveLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting minutes fairly active:', error));
+    }
+    else {
+        reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle minutes fairly active data
@@ -320,13 +339,21 @@ function handleMinutesFairlyActiveLogs(data) {
 
 // Function to get daily minutes very active log data from API
 function getMinutesVeryActiveLogs(startDate, duration) {
-  duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-  if (checkFitBitAccessToken('getMinutesVeryActiveLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`activities/minutesVeryActive/date/${startDate}/${endDate}.json`)
-      .then(data => handleMinutesVeryActiveLogs(data))
-      .catch(error => console.error('Error getting minutes very active:', error));
-  }
+  return new Promise((resolve, reject) => {
+    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    if (checkFitBitAccessToken('getMinutesVeryActiveLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`activities/minutesVeryActive/date/${startDate}/${endDate}.json`)
+        .then(data => {
+          handleMinutesVeryActiveLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting minutes very active:', error));
+    }
+    else {
+        reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle minutes very active data
@@ -336,14 +363,22 @@ function handleMinutesVeryActiveLogs(data) {
 
 // Function to get sleep logs from API with duration
 function getSleepLogs(startDate, duration) {
-  if (checkFitBitAccessToken('getSleepLogs', Array.from(arguments))) {
-    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-    const endDate = calculateEndDate(startDate, duration);
-    const apiUrl = `/sleep/date/${startDate}/${endDate}.json`;
-    makeApiRequest(apiUrl)
-      .then(data => handleSleepLogs(data))
-      .catch(error => console.error('Error getting sleep logs:', error));
-  }
+  return new Promise((resolve, reject) => {
+    if (checkFitBitAccessToken('getSleepLogs', Array.from(arguments))) {
+      duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+      const endDate = calculateEndDate(startDate, duration);
+      const apiUrl = `/sleep/date/${startDate}/${endDate}.json`;
+      makeApiRequest(apiUrl)
+        .then(data => {
+          handleSleepLogs(data)
+          resolve();
+        })
+        .catch(error => console.error('Error getting sleep logs:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle sleep log data
@@ -353,12 +388,20 @@ function handleSleepLogs(data) {
 
 // Function to get food log from API for a specific date
 function getCaloriesInLogs(startDate, duration) {
-  if (checkFitBitAccessToken('getCaloriesInLogs', Array.from(arguments))) {
-    const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`foods/log/caloriesIn/date/${startDate}/${endDate}.json`)
-      .then(data => handleCaloriesInLogs(data))
-      .catch(error => console.error('Error getting food log:', error));
-  }
+  return new Promise((resolve, reject) => {
+    if (checkFitBitAccessToken('getCaloriesInLogs', Array.from(arguments))) {
+      const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`foods/log/caloriesIn/date/${startDate}/${endDate}.json`)
+        .then(data => {
+          handleCaloriesInLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting food log:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle food log data
@@ -380,12 +423,20 @@ function handleCaloriesInLogs(data) {
 
 // Function to get diet macro log from API for a specific date
 function getMacroLogs(startDate) {
-  if (checkFitBitAccessToken('getMacroLogs', Array.from(arguments))) {
-    //const endDate = calculateEndDate(startDate, duration);
-    makeApiRequest(`foods/log/date/${startDate}.json`)
-      .then(data => handleGetMacroLogs(data))
-      .catch(error => console.error('Error getting diet macros:', error));
-  }
+  return new Promise((resolve, reject) => {
+    if (checkFitBitAccessToken('getMacroLogs', Array.from(arguments))) {
+      //const endDate = calculateEndDate(startDate, duration);
+      makeApiRequest(`foods/log/date/${startDate}.json`)
+        .then(data => {
+          handleGetMacroLogs(data);
+          resolve();
+        })
+        .catch(error => console.error('Error getting diet macros:', error));
+    }
+    else {
+      reject('Access token check failed');  // Reject the promise if access token check fails
+    }
+  })
 }
 
 // Function to handle diet macro log data

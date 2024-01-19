@@ -11,14 +11,16 @@ function initModel() {
 
 function getFitbitData() {
   // Implement logic to fetch Fitbit data and populate the fitbitDatastore
-  Promise.all([getWeightLogs(getStartDate(), getDuration()), 
+  Promise.all([
+    getWeightLogs(getStartDate(), getDuration()), 
     getFatPercentLogs(getStartDate(), getDuration()),
     getCaloriesOutLogs(getStartDate(), getDuration()),
     getAzmLogs(getStartDate(), getDuration()),
     getStepLogs(getStartDate(), getDuration()),
     getDistanceLogs(getStartDate(), getDuration()),
-    getCaloriesInLogs(getStartDate(), getDuration())])
-    .then(() => {
+    getCaloriesInLogs(getStartDate(), getDuration())
+  ])
+  .then(() => {
     console.log('All operations completed successfully');
     calculateBodyWeightData(getPeriod())
     sortBodyWeightTrends()
@@ -31,6 +33,8 @@ function getFitbitData() {
 
 function calculateBodyWeightData(period) {
   // Implement logic to calculate body weight data and populate fitbitDatastore
+  fitbitDatastore = sortFitbitDatastoreByDate(fitbitDatastore);
+
   // Calculate moving averages
   const movingAverageBodyWeight = calculateMovingAverage("bodyWeight", period);
   const movingAverageFatPercent = calculateMovingAverage("fatPercent", period);  
@@ -44,12 +48,20 @@ function calculateBodyWeightData(period) {
     const leanWeight = calculateleanWeight(entry.bodyWeight, entry.fatPercent);
     leanWeightData[date] = isNaN(leanWeight) ? null : leanWeight;
 
+    entry["leanWeight"] = leanWeightData[date]
+
     // Add the calculated values back to the entry in the datastore
-    entry["bodyWeightAvg"] = movingAverageBodyWeight[date];
-    entry["fatPercentAvg"] = movingAverageFatPercent[date];
-    entry["bodyWeightLine"] = bestFitBodyWeight[date];
-    entry["fatPercentLine"] = bestFitFatPercent[date];
-    entry["leanWeight"] = leanWeightData[date];
+    // Check if the date entry already exists in the datastore object
+    if (!entry.trends) {
+      // create entry for this period duration
+      entry.trends = {[period]: {}}
+    }
+    entry.trends[period] = {
+      "bodyWeightAvg": movingAverageBodyWeight[date],
+      "fatPercentAvg" : movingAverageFatPercent[date],
+      "bodyWeightLine" : bestFitBodyWeight[date],
+      "fatPercentLine" : bestFitFatPercent[date],
+    }
   });
 
   // Calculate leanWeightAvg and add data back to the datastore
@@ -59,8 +71,8 @@ function calculateBodyWeightData(period) {
   Object.keys(fitbitDatastore).forEach(date => {
     const entry = fitbitDatastore[date];
 
-    entry["leanWeightAvg"] = movingAverageLeanWeight[date];
-    entry["leanWeightLine"] = bestFitLeanWeight[date];
+    entry.trends[period].leanWeightAvg = movingAverageLeanWeight[date];
+    entry.trends[period].leanWeightLine = bestFitLeanWeight[date];
     
   });
   // console.log(fitbitDatastore)
@@ -94,6 +106,7 @@ function calculateMovingAverage(property, duration) {
 
 // Function to calculate best fit line for a specific property
 function calculateBestFitLine(property, duration) {
+
   const dates = Object.keys(fitbitDatastore);
   const bestFitLines = {};
 
@@ -154,8 +167,8 @@ function sortBodyWeightTrends() {
 function getBestDates(propertyToSort, sortOrder = 'decending', duration, count) {
   // Extract dates and corresponding property values into an array
   const dataArray = Object.keys(fitbitDatastore).map(date => {
-    const slope = fitbitDatastore[date][propertyToSort].slope;
-    const offset = fitbitDatastore[date][propertyToSort].offset;
+    const slope = fitbitDatastore[date].trends[duration][propertyToSort].slope;
+    const offset = fitbitDatastore[date].trends[duration][propertyToSort].offset;
 
     // Calculate line points
     const linePoints = calculateLinePoints(slope, offset, date, duration);
@@ -205,4 +218,48 @@ function calculateLinePoints(slope, offset, middleDate, duration) {
   }
 
   return linePoints;
+}
+
+function sortFitbitDatastoreByDate(fitbitDatastore) {
+  // Convert object entries to an array of [key, value] pairs
+  const entries = Object.entries(fitbitDatastore);
+
+  // Sort the array based on the date (assuming the date is in ISO format)
+  entries.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+  // Convert the sorted array back to an object
+  const sortedFitbitDatastore = Object.fromEntries(entries);
+
+  return sortedFitbitDatastore;
+}
+
+function getPeriodPlanData() {
+  // Implement logic to fetch Fitbit data and populate the fitbitDatastore
+  Promise.all([
+    getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod()),
+    getMinutesLightlyActiveLogs(getStartDateFromMidPoint(), getPeriod()),
+    getMinutesFairlyActiveLogs(getStartDateFromMidPoint(), getPeriod()),
+    getMinutesVeryActiveLogs(getStartDateFromMidPoint(), getPeriod()),
+    getSleepLogs(getStartDateFromMidPoint(), getPeriod()),
+    getMacroLogs(getStartDateFromMidPoint(), getPeriod())
+  ])
+  .then(() => {
+    console.log('All operations completed successfully');
+    calculatePeriodPlanData()
+    displayPeriods()
+  })
+  .catch(error => {
+    console.error('Error in one or more operations:', error);
+  });
+}  
+
+function calculatePeriodPlanData(periodMidpoint, periodDuration) {
+  console.log("Finished period data gathering")
+  // Cycle through inputs for each day in period and calculate average min max and std dev
+
+}
+
+function displayPeriods() {
+  console.log("Display period data")
+
 }
