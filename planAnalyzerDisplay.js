@@ -25,8 +25,54 @@ function displayCharts(startDate, endDate) {
   // createFatPercentChart(fitbitDatastore, startDate, endDate)
 }
 
-function drawPeriodDisplay() {
-  // Implement logic to draw the display containing the best 4 periods and associated data
+function displayPeriods() {
+  console.log("Display period data")
+  var periodData = document.createElement('div');
+  periodData.id = "periodData";
+  // periodData.appendChild(displayPeriodMetrics(getMidPoint(), getPeriod()))
+  periodData.appendChild(displayStatsTable(getMidPoint(), getPeriod()))
+
+  document.getElementById('periodData').replaceWith(periodData)
+}
+
+function displayStatsTable(middleDate, periodDuration) {
+  var statsData = fitbitDatastore[middleDate].trends[periodDuration]
+
+  // Create a table element
+  const table = document.createElement('table');
+
+  // Create a header row
+  const headerRow = table.insertRow();
+  const headers = ['Metric', 'Average', 'Min', 'Max', 'StdDev'];
+  headers.forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    headerRow.appendChild(th);
+  });
+
+  // Iterate through the stats data and add rows to the table
+  for (const [metric, stats] of Object.entries(statsData)) {
+    if (metric.includes('Stats')) {
+      const row = table.insertRow();
+      // Replace null with "-"
+      const avg = stats.average !== null ? stats.average.toFixed(1) : "-";
+      const min = stats.min !== null ? stats.min.toFixed(1) : "-";
+      const max = stats.max !== null ? stats.max.toFixed(1) : "-";
+      const stdDev = stats.stdDev !== null ? stats.stdDev.toFixed(1) : "-";
+
+      const cells = [metric, avg, min, max, stdDev];
+
+      // Add cells to the row
+      cells.forEach(cellData => {
+        const cell = document.createElement('td');
+        cell.textContent = cellData;
+        row.appendChild(cell);
+      });
+    }
+  }
+
+  // Append the table to the body of the document
+  return table;
 }
 
 function drawPeriodDetails(startDate) {
@@ -72,4 +118,8 @@ function getStartDateFromMidPoint() {
   var startDate = new Date(midDate)
   startDate.setDate(midDate.getDate() - Math.floor(getPeriod() / 2));
   return startDate.toISOString().split('T')[0]
+}
+function getMidPoint() {
+  var midDate  = new Date(document.getElementById('midPeriodDate').value) 
+  return midDate.toISOString().split('T')[0]
 }

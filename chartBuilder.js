@@ -11,13 +11,13 @@ function createCombinedChart(datastore, startDate, endDate, period, bestDatesArr
   const filteredDates = dates.filter(date => date >= startDate && date <= endDate);
 
   const bodyWeightData = filteredDates.map(date => datastore[date].bodyWeight);
-  const bodyWeightAvgData = filteredDates.map(date => datastore[date].trends[period].bodyWeightAvg);
+  const bodyWeightAvgData = filteredDates.map(date => datastore[date].trends[period].bodyWeightStats.average);
 
   const leanWeightData = filteredDates.map(date => datastore[date].leanWeight);
-  const leanWeightAvgData = filteredDates.map(date => datastore[date].trends[period].leanWeightAvg);
+  const leanWeightAvgData = filteredDates.map(date => datastore[date].trends[period].leanWeightStats.average);
 
   const fatPercentData = filteredDates.map(date => datastore[date].fatPercent);
-  const fatPercentAvgData = filteredDates.map(date => datastore[date].trends[period].fatPercentAvg);
+  const fatPercentAvgData = filteredDates.map(date => datastore[date].trends[period].fatPercentStats.average);
 
   const bestDatesData = bestDatesArray.filter(entry => filteredDates.includes(entry.date));
 

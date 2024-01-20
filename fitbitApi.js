@@ -428,7 +428,7 @@ function getMacroLogs(startDate) {
       //const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`foods/log/date/${startDate}.json`)
         .then(data => {
-          handleGetMacroLogs(data);
+          handleGetMacroLogs(startDate, data);
           resolve();
         })
         .catch(error => console.error('Error getting diet macros:', error));
@@ -440,7 +440,17 @@ function getMacroLogs(startDate) {
 }
 
 // Function to handle diet macro log data
-function handleGetMacroLogs(data) {
-  console.log('Diet Macro log data:', data);
+function handleGetMacroLogs(date, data) {
+  console.log('Diet Macro log data:', date, data);
+  //data.forEach(entry => {
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {diet : data};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].diet = data;
+    }
+  //});
 }
 
