@@ -70,7 +70,7 @@
   <button onclick="getSleepLogs(getStartDateFromMidPoint(), getPeriod())">Get Sleep Logs</button> 
   <br/>
   <p>One day at a time</p>
-  <button onclick="getPeriodMacros(getMidPoint())">Get Macro Logs</button> <!-- 1 day only -->
+  <button onclick="getPeriodMacros(expandRange({getMidPoint(),getPeriod()}))">Get Macro Logs</button> <!-- 1 day only -->
   <br/>
   <!-- Add more buttons for other Fitbit APIs as needed -->
   <script>

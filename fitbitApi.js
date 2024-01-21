@@ -266,11 +266,11 @@ function handleDistanceLogs(data) {
 
 
 // Function to get daily minutes sedentary log data from API
-function getMinutesSedentaryLogs(startDate, duration) {
+function getMinutesSedentaryLogs(startDate, endDate) {
   return new Promise((resolve, reject) => {
-  duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+  // duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
     if (checkFitBitAccessToken('getMinutesSedentaryLogs', Array.from(arguments))) {
-      const endDate = calculateEndDate(startDate, duration);
+      // const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/minutesSedentary/date/${startDate}/${endDate}.json`)
         .then(data => {
           handleMinutesSedentaryLogs(data);
@@ -302,11 +302,11 @@ function handleMinutesSedentaryLogs(data) {
 }
 
 // Function to get daily minutes lightly active log data from API
-function getMinutesLightlyActiveLogs(startDate, duration) {
+function getMinutesLightlyActiveLogs(startDate, endDate) {
   return new Promise((resolve, reject) => {
-    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    // duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
     if (checkFitBitAccessToken('getMinutesLightlyActiveLogs', Array.from(arguments))) {
-      const endDate = calculateEndDate(startDate, duration);
+      // const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/minutesLightlyActive/date/${startDate}/${endDate}.json`)
         .then(data => {
           handleMinutesLightlyActiveLogs(data);
@@ -338,11 +338,11 @@ function handleMinutesLightlyActiveLogs(data) {
 }
 
 // Function to get daily minutes fairly active log data from API
-function getMinutesFairlyActiveLogs(startDate, duration) {
+function getMinutesFairlyActiveLogs(startDate, endDate) {
   return new Promise((resolve, reject) => {
-    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    //duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
     if (checkFitBitAccessToken('getMinutesFairlyActiveLogs', Array.from(arguments))) {
-      const endDate = calculateEndDate(startDate, duration);
+      //const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/minutesFairlyActive/date/${startDate}/${endDate}.json`)
         .then(data => {
           handleMinutesFairlyActiveLogs(data);
@@ -374,11 +374,11 @@ function handleMinutesFairlyActiveLogs(data) {
 }
 
 // Function to get daily minutes very active log data from API
-function getMinutesVeryActiveLogs(startDate, duration) {
+function getMinutesVeryActiveLogs(startDate, endDate) {
   return new Promise((resolve, reject) => {
-    duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+    //duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
     if (checkFitBitAccessToken('getMinutesVeryActiveLogs', Array.from(arguments))) {
-      const endDate = calculateEndDate(startDate, duration);
+      // const endDate = calculateEndDate(startDate, duration);
       makeApiRequest(`activities/minutesVeryActive/date/${startDate}/${endDate}.json`)
         .then(data => {
           handleMinutesVeryActiveLogs(data);
@@ -410,11 +410,11 @@ function handleMinutesVeryActiveLogs(data) {
 }
 
 // Function to get sleep logs from API with duration
-function getSleepLogs(startDate, duration) {
+function getSleepLogs(startDate, endDate) {
   return new Promise((resolve, reject) => {
     if (checkFitBitAccessToken('getSleepLogs', Array.from(arguments))) {
-      duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
-      const endDate = calculateEndDate(startDate, duration);
+      // duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
+      // const endDate = calculateEndDate(startDate, duration);
       const apiUrl = `/sleep/date/${startDate}/${endDate}.json`;
       makeApiRequest(apiUrl)
         .then(data => {

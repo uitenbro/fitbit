@@ -40,7 +40,8 @@ function getTimeSeriesFitbitData() {
       calculateTimeSeriesDerivedData(getPeriod())
       sortBodyWeightTrends()
       displayCharts(getStartDateCharts(), getEndDateCharts())
-      //getFitbitIntervalData();
+      
+      getFitbitIntervalData();
     })
     .catch(error => {
       console.error('Error in one or more operations:', error);
@@ -49,10 +50,10 @@ function getTimeSeriesFitbitData() {
   else {
     console.log("Using local storage")
     calculateTimeSeriesDerivedData(getPeriod())
-    calculateIntervalDerivedData(getPeriod())
     sortBodyWeightTrends()
     displayCharts(getStartDateCharts(), getEndDateCharts())
-    displayPeriods()
+
+    getFitbitIntervalData(getPeriod())
   }
 }
 
@@ -75,7 +76,7 @@ function calculateTimeSeriesDerivedData(period) {
   const leanWeightData = {};
   Object.keys(fitbitDatastore).forEach(date => {
     const entry = fitbitDatastore[date];
-    const leanWeight = calculateleanWeight(entry.bodyWeight, entry.fatPercent);
+    const leanWeight = entry.bodyWeight * (1 - entry.fatPercent / 100); 
     leanWeightData[date] = isNaN(leanWeight) ? null : leanWeight;
     entry["leanWeight"] = leanWeightData[date]
 
@@ -209,10 +210,6 @@ function calculateBestFitLine(property, duration) {
     // Don't include slopes for samples shorter than the period duration
     if (n == duration) {
       bestFitLines[date] = { slope, offset };
-      // if(date == '2022-05-31') {
-      //   console.log(`date: ${date} slope: ${slope} offset: ${offset} fitbitDatastore[date].leanWeight: `)
-      //     console.log (fitbitDatastore[date])
-      // }
     }
     else {
       bestFitLines[date] = { slope: 0, offset: 0 }
@@ -222,12 +219,6 @@ function calculateBestFitLine(property, duration) {
 
   return bestFitLines;
 }
-
-// Function to calculate leanWeight based on bodyWeight and fatPercent
-function calculateleanWeight(bodyWeight, fatPercent) {
-  return bodyWeight * (1 - fatPercent / 100);
-}
-
 
 function sortBodyWeightTrends() {
   // Implement logic to sort trends in fitbitDatastore based on the supplied goal
@@ -306,28 +297,42 @@ function sortFitbitDatastoreByDate(fitbitDatastore) {
 function getFitbitIntervalData() {
   // Get the intervals and dates that need data
   const missing = getCombinedDates()
-  console.log (missing)
+  const missingMinuteRanges = missing.missingMinuteRanges;
+  console.log(`Need to make ${missingMinuteRanges.length} + ${missing.missingDietDates.length} API calls`)
+  const functionCalls = [];
 
-  // Implement logic to fetch Fitbit data and populate the fitbitDatastore
-  Promise.all([
-    getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod()),
-    getMinutesLightlyActiveLogs(getStartDateFromMidPoint(), getPeriod()),
-    getMinutesFairlyActiveLogs(getStartDateFromMidPoint(), getPeriod()),
-    getMinutesVeryActiveLogs(getStartDateFromMidPoint(), getPeriod()),
-    
-    getPeriodMacros(getStartDateFromMidPoint(), getPeriod()),
+  // Collect function calls to get all missing minute data  
+  if (missingMinuteRanges) {
+    functionCalls.push(...missingMinuteRanges.map(range => getMinutesSedentaryLogs(range.startDate, range.endDate)));
+    functionCalls.push(...missingMinuteRanges.map(range => getMinutesLightlyActiveLogs(range.startDate, range.endDate)));
+    functionCalls.push(...missingMinuteRanges.map(range => getMinutesFairlyActiveLogs(range.startDate, range.endDate)));
+    functionCalls.push(...missingMinuteRanges.map(range => getMinutesVeryActiveLogs(range.startDate, range.endDate)));
+    functionCalls.push(...missingMinuteRanges.map(range => getSleepLogs(range.startDate, range.endDate)));
+  }
+  // Add call for macros if necessary
+  if (missing.missingDietDates.length) {
+    functionCalls.push(getPeriodMacros(missing.missingDietDates));
+  }
 
-    getSleepLogs(getStartDateFromMidPoint(), getPeriod())
-
-  ])
-  .then(() => {
-    console.log('All interval requests completed successfully');
+  // If there is missing data make the requests
+  // console.log(`Need to make ${functionCalls.length} function calls`)
+  if (functionCalls.length) {
+    // Fetch Fitbit data and populate the fitbitDatastore then complete the calculations and display
+    Promise.all(functionCalls)
+    .then(() => {
+      console.log('All interval requests completed successfully');
+      calculateIntervalDerivedData()
+      displayPeriods()
+    })
+    .catch(error => {
+      console.error('Error in one or more operations:', error);
+    });
+  }
+  else {
+    console.log("No new interval or macro data to fetch using local data");
     calculateIntervalDerivedData()
     displayPeriods()
-  })
-  .catch(error => {
-    console.error('Error in one or more operations:', error);
-  });
+  }
 }  
 
 function calculateIntervalDerivedData() {
@@ -357,23 +362,9 @@ function calculateIntervalDerivedData() {
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))
 }
 
-function getPeriodMacros(middleDate, periodDuration) {
-  const dates = Object.keys(fitbitDatastore);
-  const middleIndex = dates.indexOf(middleDate);
-
-  if (middleIndex === -1) {
-    console.error('Middle date not found in the datastore.');
-    return [];
-  }
-
-  const startIndex = Math.max(0, middleIndex - Math.floor(periodDuration / 2));
-  const endIndex = Math.min(dates.length - 1, middleIndex + Math.ceil(periodDuration / 2) - 1);
-
+function getPeriodMacros(datesToRequest) {
   // Collect function calls to get all macro data
-  const macroDataRequests = [];
-  for (let i = startIndex; i <= endIndex; i++) {
-    macroDataRequests.push(getMacroLogs(dates[i]))
-  }
+  const macroDataRequests = datesToRequest.map(dateString => getMacroLogs(dateString));
 
   Promise.all(macroDataRequests)
     .then(results => {
@@ -454,9 +445,11 @@ function getCombinedDates() {
     }
   }
 
-  // Push the last range
-  missingMinRanges.push(currentRange);
-
+  // Push the last range if dates are defined
+  if (currentRange.startDate && currentRange.endDate) {
+    missingMinRanges.push(currentRange);
+  }
+  
   // Return the results
   return { missingDietDates : sortedUniqueFoodDateStrings, missingMinuteRanges : missingMinRanges };
 }
