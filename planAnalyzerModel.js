@@ -1,8 +1,9 @@
 // planAnalyzerModel.js
 
 var fitbitDatastore = {};
-var fatPercentBestDates = []
-var leanWeightBestDates = []
+var fatPercentBestDates = [];
+var leanWeightBestDates = [];
+var otherInterestingDates = [{date: '2024-01-01', periodDuration: 5, value: NaN, linePoints: [0,0,0,0], line: 'userLine'}];
 
 function initModel() {
   // Implement initialization logic based on the design document
@@ -39,7 +40,7 @@ function getTimeSeriesFitbitData() {
       calculateTimeSeriesDerivedData(getPeriod())
       sortBodyWeightTrends()
       displayCharts(getStartDateCharts(), getEndDateCharts())
-      getFitbitIntervalData();
+      //getFitbitIntervalData();
     })
     .catch(error => {
       console.error('Error in one or more operations:', error);
@@ -303,6 +304,10 @@ function sortFitbitDatastoreByDate(fitbitDatastore) {
 }
 
 function getFitbitIntervalData() {
+  // Get the intervals and dates that need data
+  const missing = getCombinedDates()
+  console.log (missing)
+
   // Implement logic to fetch Fitbit data and populate the fitbitDatastore
   Promise.all([
     getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod()),
@@ -310,11 +315,13 @@ function getFitbitIntervalData() {
     getMinutesFairlyActiveLogs(getStartDateFromMidPoint(), getPeriod()),
     getMinutesVeryActiveLogs(getStartDateFromMidPoint(), getPeriod()),
     
-    getSleepLogs(getStartDateFromMidPoint(), getPeriod()),
-    getPeriodMacros(getStartDateFromMidPoint(), getPeriod())
+    getPeriodMacros(getStartDateFromMidPoint(), getPeriod()),
+
+    getSleepLogs(getStartDateFromMidPoint(), getPeriod())
+
   ])
   .then(() => {
-    console.log('All operations completed successfully');
+    console.log('All interval requests completed successfully');
     calculateIntervalDerivedData()
     displayPeriods()
   })
@@ -330,6 +337,10 @@ function calculateIntervalDerivedData() {
   const statsAzmFat = calculateStats("AZM.fatBurnActiveZoneMinutes", getPeriod());
   const statsAzmCardio = calculateStats("AZM.cardioActiveZoneMinutes", getPeriod());
   const statsAzmPeak = calculateStats("AZM.peakBurnActiveZoneMinutes", getPeriod());
+  const statsMinutesSedentary = calculateStats("minutesSedentary", getPeriod());
+  const statsMinutesLightlyActive = calculateStats("LightlyActive", getPeriod());
+  const statsMinutesFairlyActive = calculateStats("minutesFairlyActive", getPeriod());
+  const statsMinutesVeryActive = calculateStats("minutesVeryActive", getPeriod());
 
   var period = getPeriod()
   Object.keys(fitbitDatastore).forEach(date => {
@@ -338,6 +349,10 @@ function calculateIntervalDerivedData() {
     entry.trends[period].AzmFatBurnStats = statsAzmFat[date];
     entry.trends[period].AzmCardioStats = statsAzmCardio[date];
     entry.trends[period].AzmPeakStats = statsAzmPeak[date];    
+    entry.trends[period].minutesSedentaryStats = statsMinutesSedentary[date];    
+    entry.trends[period].minutesLightlyActive = statsMinutesLightlyActive[date];    
+    entry.trends[period].minutesFairlyActive = statsMinutesFairlyActive[date];    
+    entry.trends[period].minutesVeryActiveStats = statsMinutesVeryActive[date];    
   });
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))
 }
@@ -386,3 +401,87 @@ function calculateMacroDerivedData() {
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))
 }
 
+function getCombinedDates() {
+  // Extract date strings using map
+  const leanDateObjects = leanWeightBestDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
+  const fatDateObjects = fatPercentBestDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
+  const otherDateObjects = otherInterestingDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
+
+  const combinedDateObjects = [...leanDateObjects, ...fatDateObjects, ...otherDateObjects];
+
+  // Remove duplicate dateStrings (if any)
+  const uniqueDateObjects = Array.from(new Set(combinedDateObjects));
+
+  // Array to store dateStrings that don't exist in fitbitDatastore.food
+  const missingMinDateStrings = [];
+  const missingDietDateStrings = [];
+
+  // Check if fitbitDatastore has entries for the combined dateStrings
+  uniqueDateObjects.forEach(dateObject => {
+    const MinEntry = fitbitDatastore[dateObject.date]?.minutesSedentary;
+    if (MinEntry === undefined) {
+      // Expand the range and add to missingDateStrings
+      const expandedRange = expandRange(dateObject);
+      missingMinDateStrings.push(...expandedRange);
+    }
+    const dietEntry = fitbitDatastore[dateObject.date]?.diet;
+    if (dietEntry === undefined) {
+      // Expand the range and add to missingDateStrings
+      const expandedRange = expandRange(dateObject);
+      missingDietDateStrings.push(...expandedRange);
+    }
+  });
+
+  // Remove duplicate dateStrings (if any) and sort
+  const sortedUniqueMinDateStrings = [...new Set(missingMinDateStrings)].sort();
+  const sortedUniqueFoodDateStrings = [...new Set(missingDietDateStrings)].sort();
+
+  // Calculate the minimum number of 100-day ranges
+  const missingMinRanges = [];
+  let currentRange = { startDate: sortedUniqueMinDateStrings[0], endDate: sortedUniqueMinDateStrings[0] };
+
+  for (let i = 1; i < sortedUniqueMinDateStrings.length; i++) {
+    const currentDate = new Date(sortedUniqueMinDateStrings[i]);
+    const previousDate = new Date(sortedUniqueMinDateStrings[i - 1]);
+
+    // Check if the difference between current and previous dates is greater than 100 days
+    if ((currentDate - previousDate) / (1000 * 60 * 60 * 24) > 100) {
+      missingMinRanges.push(currentRange);
+      currentRange = { startDate: sortedUniqueMinDateStrings[i], endDate: sortedUniqueMinDateStrings[i] };
+    } 
+    else {
+      currentRange.endDate = sortedUniqueMinDateStrings[i];
+    }
+  }
+
+  // Push the last range
+  missingMinRanges.push(currentRange);
+
+  // Return the results
+  return { missingDietDates : sortedUniqueFoodDateStrings, missingMinuteRanges : missingMinRanges };
+}
+
+function expandRange(dateObject) {
+  const { date, duration } = dateObject;
+
+  // Parse the mid-point date and duration
+  const midPointDate = new Date(date);
+
+  // Calculate the start and end dates of the period
+  const startDate = new Date(midPointDate);
+  startDate.setDate(midPointDate.getDate() - Math.floor(duration / 2));
+
+  const endDate = new Date(midPointDate);
+  endDate.setDate(midPointDate.getDate() + Math.ceil(duration / 2) - 1);
+
+  // Generate an array of all date strings within the period
+  const dateStrings = [];
+  let currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    dateStrings.push(currentDate.toISOString().split('T')[0]);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  //console.log(dateStrings)
+  return dateStrings;
+}

@@ -287,6 +287,18 @@ function getMinutesSedentaryLogs(startDate, duration) {
 // Function to handle minutes sedentary data
 function handleMinutesSedentaryLogs(data) {
   console.log('Minutes Sedentary Log data:', data);
+  data['activities-minutesSedentary'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseInt(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {minutesSedentary : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].minutesSedentary = value;
+    }
+  });   
 }
 
 // Function to get daily minutes lightly active log data from API
@@ -311,6 +323,18 @@ function getMinutesLightlyActiveLogs(startDate, duration) {
 // Function to handle minutes lightly active data
 function handleMinutesLightlyActiveLogs(data) {
   console.log('Minutes Lightly Active Log data:', data);
+  data['activities-minutesLightlyActive'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseInt(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {minutesLightlyActive : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].minutesLightlyActive = value;
+    }
+  });   
 }
 
 // Function to get daily minutes fairly active log data from API
@@ -335,6 +359,18 @@ function getMinutesFairlyActiveLogs(startDate, duration) {
 // Function to handle minutes fairly active data
 function handleMinutesFairlyActiveLogs(data) {
   console.log('Minutes Fairly Active Log data:', data);
+  data['activities-minutesFairlyActive'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseInt(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {minutesFairlyActive : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].minutesFairlyActive = value;
+    }
+  });
 }
 
 // Function to get daily minutes very active log data from API
@@ -359,6 +395,18 @@ function getMinutesVeryActiveLogs(startDate, duration) {
 // Function to handle minutes very active data
 function handleMinutesVeryActiveLogs(data) {
   console.log('Minutes Very Active Log data:', data);
+  data['activities-minutesVeryActive'].forEach(entry => {
+    const date = entry.dateTime;
+    const value = parseInt(entry.value); // Convert the value to a numeric type if needed
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {minutesVerlyActive : value};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].minutesVerlyActive = value;
+    }
+  });
 }
 
 // Function to get sleep logs from API with duration

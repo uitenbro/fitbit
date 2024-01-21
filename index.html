@@ -56,10 +56,12 @@
   <label for="endDateCharts">Chart End Date:</label>
   <input type="date" id="endDateCharts" name="endDateCharts" value="2022-06-06">
   <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts(), getPeriod())">Display Charts</button>
-  <br/><br/>
+  <br/>
+  <button onclick="getCombinedDates()">Get Combined Dates</button>
+  <br/>
   <label for="startDateCharts">Period Mid-Point:</label>
   <input type="date" id="midPeriodDate" name="midPeriodDate" value="2024-01-12">
-  <button onclick="getFitbitIntervalData()">Get Fitness Plan Data</button>
+  <button onclick="getFitbitIntervalData()">Get Fitbit Interval Data</button>
   <br/>
   <button onclick="getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Sedentary Logs</button> 
   <button onclick="getMinutesLightlyActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Lightly Active Logs</button>

@@ -29,7 +29,7 @@ function displayPeriods() {
   console.log("Display period data")
   var periodData = document.createElement('div');
   periodData.id = "periodData";
-  // periodData.appendChild(displayPeriodMetrics(getMidPoint(), getPeriod()))
+  periodData.appendChild(displayPeriodDetails(getMidPoint(), getPeriod()))
   periodData.appendChild(displayStatsTable(getMidPoint(), getPeriod()))
 
   document.getElementById('periodData').replaceWith(periodData)
@@ -75,8 +75,42 @@ function displayStatsTable(middleDate, periodDuration) {
   return table;
 }
 
-function drawPeriodDetails(startDate) {
-  // Implement logic to draw the details associated with a specific period
+function displayPeriodDetails(middleDate, periodDuration) {
+  var lineData = fitbitDatastore[middleDate].trends[periodDuration]
+
+  // Create a table element
+  const table = document.createElement('table');
+
+  // Create a header row
+  const headerRow = table.insertRow();
+  const headers = ['Metric', 'Slope', 'Offset'];
+  headers.forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    headerRow.appendChild(th);
+  });
+
+  // Iterate through the stats data and add rows to the table
+  for (const [metric, line] of Object.entries(lineData)) {
+    if (metric.includes('Line')) {
+      const row = table.insertRow();
+      // Replace null with "-"
+      const slope = line.slope !== null ? line.slope.toFixed(1) : "-";
+      const offset = line.offset !== null ? line.offset.toFixed(1) : "-";
+
+      const cells = [metric, slope, offset];
+
+      // Add cells to the row
+      cells.forEach(cellData => {
+        const cell = document.createElement('td');
+        cell.textContent = cellData;
+        row.appendChild(cell);
+      });
+    }
+  }
+
+  // Append the table to the body of the document
+  return table;
 }
 
 // Additional utility functions or UI components can be added based on your requirements
