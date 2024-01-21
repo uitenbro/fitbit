@@ -3,7 +3,7 @@
 var fitbitDatastore = {};
 var fatPercentBestDates = [];
 var leanWeightBestDates = [];
-var otherInterestingDates = [{date: '2024-01-01', periodDuration: 5, value: NaN, linePoints: [0,0,0,0], line: 'userLine'}];
+var otherInterestingDates = [{date: '2024-01-01', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'}];
 
 function initModel() {
   // Implement initialization logic based on the design document
@@ -80,7 +80,7 @@ function calculateTimeSeriesDerivedData(period) {
     leanWeightData[date] = isNaN(leanWeight) ? null : leanWeight;
     entry["leanWeight"] = leanWeightData[date]
 
-    const calorieDiff = fitbitDatastore[date].caloriesIn ? fitbitDatastore[date].caloriesOut - fitbitDatastore[date].caloriesIn : NaN;
+    const calorieDiff = fitbitDatastore[date].caloriesIn ? fitbitDatastore[date].caloriesIn - fitbitDatastore[date].caloriesOut : NaN;
     entry.calorieDiff = calorieDiff;
 
     // Add the calculated values back to the entry in the datastore
@@ -355,8 +355,8 @@ function calculateIntervalDerivedData() {
     entry.trends[period].AzmCardioStats = statsAzmCardio[date];
     entry.trends[period].AzmPeakStats = statsAzmPeak[date];    
     entry.trends[period].minutesSedentaryStats = statsMinutesSedentary[date];    
-    entry.trends[period].minutesLightlyActive = statsMinutesLightlyActive[date];    
-    entry.trends[period].minutesFairlyActive = statsMinutesFairlyActive[date];    
+    entry.trends[period].minutesLightlyActiveStats = statsMinutesLightlyActive[date];    
+    entry.trends[period].minutesFairlyActiveStats = statsMinutesFairlyActive[date];    
     entry.trends[period].minutesVeryActiveStats = statsMinutesVeryActive[date];    
   });
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))

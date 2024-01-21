@@ -27,12 +27,24 @@ function displayCharts(startDate, endDate) {
 
 function displayPeriods() {
   console.log("Display period data")
-  var periodData = document.createElement('div');
-  periodData.id = "periodData";
-  periodData.appendChild(displayPeriodDetails(getMidPoint(), getPeriod()))
-  periodData.appendChild(displayStatsTable(getMidPoint(), getPeriod()))
 
-  document.getElementById('periodData').replaceWith(periodData)
+  var allPeriodData = document.createElement('div');
+  allPeriodData.id = "periodData";
+
+  leanWeightBestDates.forEach(periodData => {
+    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  })
+  fatPercentBestDates.forEach(periodData => {
+    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  })
+  otherInterestingDates.forEach(periodData => {
+    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  })
+
+  document.getElementById('periodData').replaceWith(allPeriodData)
 }
 
 function displayStatsTable(middleDate, periodDuration) {
@@ -40,7 +52,6 @@ function displayStatsTable(middleDate, periodDuration) {
 
   // Create a table element
   const table = document.createElement('table');
-
   // Create a header row
   const headerRow = table.insertRow();
   const headers = ['Metric', 'Average', 'Min', 'Max', 'StdDev'];
@@ -76,19 +87,31 @@ function displayStatsTable(middleDate, periodDuration) {
 }
 
 function displayPeriodDetails(middleDate, periodDuration) {
-  var lineData = fitbitDatastore[middleDate].trends[periodDuration]
-
+  var startDate = getStartDateFromMidPoint(middleDate, periodDuration)
+  var endDate = calculateEndDate(startDate, periodDuration)
   // Create a table element
   const table = document.createElement('table');
+  table.style.float = 'left'
 
   // Create a header row
   const headerRow = table.insertRow();
-  const headers = ['Metric', 'Slope', 'Offset'];
+  const headers = [` ${startDate} - ${endDate}`, periodDuration, middleDate];
   headers.forEach(headerText => {
     const th = document.createElement('th');
     th.textContent = headerText;
     headerRow.appendChild(th);
   });
+
+  // Create a header row
+  const headerRowA = table.insertRow();
+  const headersA = ['Metric', 'Slope', 'Offset'];
+  headersA.forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    headerRowA.appendChild(th);
+  });
+
+  var lineData = fitbitDatastore[middleDate].trends[periodDuration]
 
   // Iterate through the stats data and add rows to the table
   for (const [metric, line] of Object.entries(lineData)) {
@@ -147,10 +170,10 @@ function calculateEndDate(startDate, duration) {
   return end.toISOString().split('T')[0];
 }
 
-function getStartDateFromMidPoint() {
-  var midDate  = new Date(document.getElementById('midPeriodDate').value) 
+function getStartDateFromMidPoint(middleDate, periodDuration) {
+  var midDate = new Date(middleDate)
   var startDate = new Date(midDate)
-  startDate.setDate(midDate.getDate() - Math.floor(getPeriod() / 2));
+  startDate.setDate(midDate.getDate() - Math.floor(periodDuration / 2));
   return startDate.toISOString().split('T')[0]
 }
 function getMidPoint() {

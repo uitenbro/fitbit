@@ -63,11 +63,11 @@
   <input type="date" id="midPeriodDate" name="midPeriodDate" value="2024-01-12">
   <button onclick="getFitbitIntervalData()">Get Fitbit Interval Data</button>
   <br/>
-  <button onclick="getMinutesSedentaryLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Sedentary Logs</button> 
-  <button onclick="getMinutesLightlyActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Lightly Active Logs</button>
-  <button onclick="getMinutesFairlyActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Fairly Active Logs</button>
-  <button onclick="getMinutesVeryActiveLogs(getStartDateFromMidPoint(), getPeriod())">Get Minutes Very Active Logs</button>
-  <button onclick="getSleepLogs(getStartDateFromMidPoint(), getPeriod())">Get Sleep Logs</button> 
+  <button onclick="getMinutesSedentaryLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Sedentary Logs</button> 
+  <button onclick="getMinutesLightlyActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Lightly Active Logs</button>
+  <button onclick="getMinutesFairlyActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Fairly Active Logs</button>
+  <button onclick="getMinutesVeryActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Very Active Logs</button>
+  <button onclick="getSleepLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Sleep Logs</button> 
   <br/>
   <p>One day at a time</p>
   <button onclick="getPeriodMacros(expandRange({getMidPoint(),getPeriod()}))">Get Macro Logs</button> <!-- 1 day only -->
