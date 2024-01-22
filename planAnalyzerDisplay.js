@@ -20,7 +20,7 @@ function drawBodyWeightDisplay() {
 }
 
 function displayCharts(startDate, endDate) {
-  createCombinedChart(fitbitDatastore, startDate, endDate, getPeriod(), leanWeightBestDates.concat(fatPercentBestDates));
+  createCombinedChart(fitbitDatastore, startDate, endDate, getPeriod(), leanWeightBestDates.concat(fatPercentBestDates).concat(leanWeightRecentDates).concat(fatPercentRecentDates));
   // createWeightChart(fitbitDatastore, startDate, endDate)
   // createFatPercentChart(fitbitDatastore, startDate, endDate)
 }
@@ -39,7 +39,11 @@ function displayPeriods() {
     allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
     allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
-  otherInterestingDates.forEach(periodData => {
+  leanWeightRecentDates.forEach(periodData => {
+    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  })
+  fatPercentRecentDates.forEach(periodData => {
     allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
     allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
@@ -89,6 +93,7 @@ function displayStatsTable(middleDate, periodDuration) {
 function displayPeriodDetails(middleDate, periodDuration) {
   var startDate = getStartDateFromMidPoint(middleDate, periodDuration)
   var endDate = calculateEndDate(startDate, periodDuration)
+
   // Create a table element
   const table = document.createElement('table');
   table.style.float = 'left'
@@ -98,7 +103,10 @@ function displayPeriodDetails(middleDate, periodDuration) {
   const headers = [` ${startDate} - ${endDate}`, periodDuration, middleDate];
   headers.forEach(headerText => {
     const th = document.createElement('th');
-    th.textContent = headerText;
+    var chartLink = document.createElement('a');
+    chartLink.href = `javascript:displayCharts('${startDate}', '${endDate}', ${periodDuration})`;
+    chartLink.textContent = headerText
+    th.appendChild(chartLink)
     headerRow.appendChild(th);
   });
 

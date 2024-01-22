@@ -3,7 +3,15 @@
 var fitbitDatastore = {};
 var fatPercentBestDates = [];
 var leanWeightBestDates = [];
-var otherInterestingDates = [{date: '2024-01-01', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'}];
+var fatPercentRecentDates = [];
+var leanWeightRecentDates = [];
+
+// var otherInterestingDates = [
+//   {date: '2024-01-17', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'},
+//   {date: '2024-01-12', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'},
+//   {date: '2024-01-07', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'},
+//   {date: '2024-01-02', periodDuration: 5, value: NaN, linePoints: [0,0,0,0,0], line: 'userLine'}      
+// ];
 
 function initModel() {
   // Implement initialization logic based on the design document
@@ -223,15 +231,32 @@ function calculateBestFitLine(property, duration) {
 function sortBodyWeightTrends() {
   // Implement logic to sort trends in fitbitDatastore based on the supplied goal
   leanWeightBestDates = getBestDates('leanWeightLine', 'decending', getPeriod(), 5);
-  fatPercentBestDates = getBestDates('fatPercentLine', 'ascending', getPeriod(), 5);
-
+  fatPercentBestDates = getBestDates('fatPercentLine', 'ascending', getPeriod(), 5);  
+  leanWeightRecentDates = getBestDates('leanWeightLine', 'decending', getPeriod(), 5, 120);
+  fatPercentRecentDates = getBestDates('fatPercentLine', 'ascending', getPeriod(), 5, 120);
+  
   console.log('Top five leanWeightLine:', leanWeightBestDates);
-  console.log('Top five fatPercentLine:', fatPercentBestDates);
+  console.log('Top five fatPercentLine:', fatPercentBestDates);  
+  console.log('Top five recent leanWeightLine:', leanWeightRecentDates);
+  console.log('Top five recent fatPercentLine:', fatPercentRecentDates);
 }
 
-function getBestDates(propertyToSort, sortOrder = 'decending', duration, count) {
+function getBestDates(propertyToSort, sortOrder = 'decending', duration, count, recent = 0) {
   // Extract dates and corresponding property values into an array
-  const dataArray = Object.keys(fitbitDatastore).map(date => {
+  let dateArray;
+
+  if (recent === 0) {
+    // When recent=0, examine the entire datastore
+    dateArray = Object.keys(fitbitDatastore);
+  } else {
+    // When recent=n, examine only the n most recent days
+    const allDates = Object.keys(fitbitDatastore);
+    const startIndex = Math.max(0, allDates.length - recent);
+    dateArray = allDates.slice(startIndex);
+  }
+
+  // Extract dates and corresponding property values into an array
+  dateArray = dateArray.map(date => {
     const slope = fitbitDatastore[date].trends[duration][propertyToSort].slope;
     const offset = fitbitDatastore[date].trends[duration][propertyToSort].offset;
 
@@ -248,10 +273,10 @@ function getBestDates(propertyToSort, sortOrder = 'decending', duration, count) 
   });
 
   // Sort the array based on the property value and sortOrder
-  dataArray.sort((a, b) => (sortOrder === 'ascending' ? a.value - b.value : b.value - a.value));
+  dateArray.sort((a, b) => (sortOrder === 'ascending' ? a.value - b.value : b.value - a.value));
 
   // Take the top five entries
-  const topDates = dataArray.slice(0, count);
+  const topDates = dateArray.slice(0, count);
 
   return topDates;
 }
@@ -346,6 +371,12 @@ function calculateIntervalDerivedData() {
   const statsMinutesLightlyActive = calculateStats("LightlyActive", getPeriod());
   const statsMinutesFairlyActive = calculateStats("minutesFairlyActive", getPeriod());
   const statsMinutesVeryActive = calculateStats("minutesVeryActive", getPeriod());
+  const statsDietCalories = calculateStats("diet.summary.calories", getPeriod());
+  const statsDietCarbs = calculateStats("diet.summary.carbs", getPeriod());
+  const statsDietFat = calculateStats("diet.summary.fat", getPeriod());
+  const statsDietProtein = calculateStats("diet.summary.protein", getPeriod());
+  const statsDietFiber = calculateStats("diet.summary.fiber", getPeriod());
+
 
   var period = getPeriod()
   Object.keys(fitbitDatastore).forEach(date => {
@@ -358,6 +389,11 @@ function calculateIntervalDerivedData() {
     entry.trends[period].minutesLightlyActiveStats = statsMinutesLightlyActive[date];    
     entry.trends[period].minutesFairlyActiveStats = statsMinutesFairlyActive[date];    
     entry.trends[period].minutesVeryActiveStats = statsMinutesVeryActive[date];    
+    entry.trends[period].dietCaloriesStats = statsDietCalories[date];    
+    entry.trends[period].dietCarbsStats = statsDietCarbs[date];    
+    entry.trends[period].dietFatStats = statsDietFat[date];    
+    entry.trends[period].dietProteinStats = statsDietProtein[date];    
+    entry.trends[period].dietFiberStats = statsDietFiber[date];    
   });
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))
 }
@@ -396,9 +432,10 @@ function getCombinedDates() {
   // Extract date strings using map
   const leanDateObjects = leanWeightBestDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
   const fatDateObjects = fatPercentBestDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
-  const otherDateObjects = otherInterestingDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
+  const leanRecentDateObjects = leanWeightRecentDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
+  const fatRecentDateObjects = fatPercentRecentDates.map(obj => ({ date: obj.date, duration: obj.periodDuration }));
 
-  const combinedDateObjects = [...leanDateObjects, ...fatDateObjects, ...otherDateObjects];
+  const combinedDateObjects = [...leanDateObjects, ...fatDateObjects, ...leanRecentDateObjects, ...fatRecentDateObjects];
 
   // Remove duplicate dateStrings (if any)
   const uniqueDateObjects = Array.from(new Set(combinedDateObjects));
