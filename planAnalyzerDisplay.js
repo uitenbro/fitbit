@@ -28,17 +28,59 @@ function displayCharts(startDate, endDate) {
 function displayPeriods() {
   console.log("Display period data")
   var periodDuration = getPeriod();
+  var colId = 0;
   var allPeriodData = document.createElement('div');
   allPeriodData.id = "allPeriodData";
   allPeriodData.classList.add("container");
 
   var columeOnePeriodData = document.createElement('div');
-  columeOnePeriodData.id = "columnOnePeriodData";
+  columeOnePeriodData.id = colId++;
   columeOnePeriodData.classList.add("column");
   var ul = document.createElement('ul');
 
   // Populate column 1 with the metric names
   var statsData = fitbitDatastore[leanWeightBestDates[0].date].trends[periodDuration]
+  // Add period header info to column
+  for (const info of ['startDate', 'endDate', 'periodDuration', 'lineType']) {
+    var li = document.createElement('li');
+    var aLeft = document.createElement('a');
+    aLeft.classList.add("left");
+    aLeft.appendChild(document.createTextNode(info));
+    var aRight = document.createElement('a');
+    aRight.classList.add("right");
+    aRight.appendChild(document.createTextNode('units'));
+    li.appendChild(aLeft);
+    li.appendChild(aRight);
+    ul.appendChild(li);
+  }
+  // Add period trends
+  for (const [metric, stats] of Object.entries(statsData)) {
+    if (metric.includes('Line')) {
+      for (const key of ['slope', 'offset']) {
+        var li = document.createElement('li');
+        var aLeft = document.createElement('a');
+        aLeft.classList.add("left");
+        aLeft.appendChild(document.createTextNode(`${metric} ${key}`));
+        var aRight = document.createElement('a');
+        aRight.classList.add("right");
+        aRight.appendChild(document.createTextNode('units'));
+        li.appendChild(aLeft);
+        li.appendChild(aRight);
+        ul.appendChild(li);
+      }
+    }
+  }
+  // Add header for statistics
+  var li = document.createElement('li');
+  var aLeft = document.createElement('a');
+  aLeft.classList.add("left");
+  aLeft.appendChild(document.createTextNode('\u00A0'));
+  // var aRight = document.createElement('a');
+  // aRight.classList.add("right");
+  // aRight.appendChild(document.createTextNode('units'));
+  li.appendChild(aLeft);
+  // li.appendChild(aRight);
+  ul.appendChild(li);
   for (const [metric, stats] of Object.entries(statsData)) {
     if (metric.includes('Stats')) {
       var li = document.createElement('li');
@@ -56,14 +98,67 @@ function displayPeriods() {
   columeOnePeriodData.appendChild(ul)
   allPeriodData.appendChild(columeOnePeriodData)
 
+  // For all the interesting period groups
   for (const periodDates of [leanWeightBestDates, fatPercentBestDates, leanWeightRecentDates, fatPercentRecentDates]) {
+    // For each period
     periodDates.forEach(periodData => {
+      // Get the start and end dates
+      var startDate = getStartDateFromMidPoint(periodData.date, periodDuration)
+      var endDate = calculateEndDate(startDate, periodDuration)
+      // Create four columns for each period
       var statsData = fitbitDatastore[periodData.date].trends[periodDuration]
       for (const key of ['average', 'min', 'max', 'stdDev']) {
         var leanBestPeriodData = document.createElement('div');
-        leanBestPeriodData.id = "leanWeightPeriodData";
+        leanBestPeriodData.id = colId++;
         leanBestPeriodData.classList.add("column");
         var ul = document.createElement('ul');
+        // Add period header info to column
+        for (const info of [startDate, endDate, periodDuration, periodData.line]) {
+          var li = document.createElement('li');
+          var aLeft = document.createElement('a');
+          aLeft.classList.add("left");
+          aLeft.appendChild(document.createTextNode(info));
+          // var aRight = document.createElement('a');
+          // aRight.classList.add("right");
+          // aRight.appendChild(document.createTextNode('units'));
+          li.appendChild(aLeft);
+          // li.appendChild(aRight);
+          ul.appendChild(li);
+        }
+        // Add period trend line data to the header of each column
+        for (const [metric, stats] of Object.entries(statsData)) {
+          if (metric.includes('Line')) {
+            for (const key of ['slope', 'offset']) {
+              var li = document.createElement('li');
+              var aLeft = document.createElement('a');
+              aLeft.classList.add("left");
+              aLeft.appendChild(document.createTextNode(stats[key] ? parseFloat(stats[key].toFixed(1)).toLocaleString('en-US') : '-'));
+              // var aRight = document.createElement('a');
+              // aRight.classList.add("right");
+              // aRight.appendChild(document.createTextNode('units'));
+              li.appendChild(aLeft);
+              // li.appendChild(aRight);
+              ul.appendChild(li);
+            }
+          }
+        }
+        // Add header for statistics
+        var li = document.createElement('li');
+        var aLeft = document.createElement('a');
+        aLeft.classList.add("left");
+        aLeft.appendChild(document.createTextNode(key));
+        leanBestPeriodData.style.display = 'none';
+        if (key == 'average') {
+          aLeft.href = `javascript:showHideCols(${colId}, ${colId+1}, ${colId+2})`;
+          leanBestPeriodData.style.display = '';
+        }
+        // var aRight = document.createElement('a');
+        // aRight.classList.add("right");
+        // aRight.appendChild(document.createTextNode('units'));
+        li.appendChild(aLeft);
+        // li.appendChild(aRight);
+        ul.appendChild(li);
+        // Add period input statistics that is specific to this column
         for (const [metric, stats] of Object.entries(statsData)) {
           if (metric.includes('Stats')) {
             var li = document.createElement('li');
@@ -97,7 +192,7 @@ function displayPeriods() {
       // rows of numbers
 
   var all1PeriodData = document.createElement('div');
-  all1PeriodData.id = "allPeriodData";
+  all1PeriodData.id = "periodData";
 
   leanWeightBestDates.forEach(periodData => {
     all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
@@ -117,6 +212,14 @@ function displayPeriods() {
   })
 
   document.getElementById('periodData').replaceWith(all1PeriodData)
+}
+
+function showHideCols(...colIds) {
+  colIds.forEach( colId => {
+    const column = document.getElementById(colId)
+    const isVisible = column.style.display !== 'none';
+    column.style.display = isVisible ? 'none' : '';
+  })
 }
 
 function displayStatsTable(middleDate, periodDuration) {
