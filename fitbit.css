@@ -1,0 +1,57 @@
+    
+
+    .container {
+      display: flex;
+    }
+
+    .column {
+      box-sizing: border-box;
+/*      width: 200px;*/
+      position: relative;
+    }
+
+    .hide-button {
+ 
+      background-color: #ddd;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Add some basic styling for better visibility */
+    .column {
+      border: 1px solid #ddd;
+    }
+    ul {
+      padding-inline-start:0px;
+    }
+
+    li {
+      list-style: none;
+      white-space: nowrap;
+      padding:2px;
+      display: flex;
+    }
+
+    a.labels {
+      text-align: right;
+      flex:1;
+      float: right;
+/*      border: 1px solid black;*/
+      width: 220px;
+      padding-right: 1em;
+    }    
+    a.left {
+      text-align: right;
+      flex:1;
+      float: left;
+/*      border: 1px solid black;*/
+      width: 60px;
+      padding-right: 1em;
+    }
+    a.unit {
+      text-align: right;
+      flex:0.25;
+      float: left;
+/*      border: 1px solid black;*/
+      width: 15px;
+    }

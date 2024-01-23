@@ -27,28 +27,96 @@ function displayCharts(startDate, endDate) {
 
 function displayPeriods() {
   console.log("Display period data")
-
+  var periodDuration = getPeriod();
   var allPeriodData = document.createElement('div');
-  allPeriodData.id = "periodData";
+  allPeriodData.id = "allPeriodData";
+  allPeriodData.classList.add("container");
+
+  var columeOnePeriodData = document.createElement('div');
+  columeOnePeriodData.id = "columnOnePeriodData";
+  columeOnePeriodData.classList.add("column");
+  var ul = document.createElement('ul');
+
+  // Populate column 1 with the metric names
+  var statsData = fitbitDatastore[leanWeightBestDates[0].date].trends[periodDuration]
+  for (const [metric, stats] of Object.entries(statsData)) {
+    if (metric.includes('Stats')) {
+      var li = document.createElement('li');
+      var aLeft = document.createElement('a');
+      aLeft.classList.add("labels");
+      aLeft.appendChild(document.createTextNode(metric));
+      var aRight = document.createElement('a');
+      aRight.classList.add("right");
+      aRight.appendChild(document.createTextNode('units'));
+      li.appendChild(aLeft);
+      li.appendChild(aRight);
+      ul.appendChild(li);
+    }
+  }
+  columeOnePeriodData.appendChild(ul)
+  allPeriodData.appendChild(columeOnePeriodData)
+
+  for (const periodDates of [leanWeightBestDates, fatPercentBestDates, leanWeightRecentDates, fatPercentRecentDates]) {
+    periodDates.forEach(periodData => {
+      var statsData = fitbitDatastore[periodData.date].trends[periodDuration]
+      for (const key of ['average', 'min', 'max', 'stdDev']) {
+        var leanBestPeriodData = document.createElement('div');
+        leanBestPeriodData.id = "leanWeightPeriodData";
+        leanBestPeriodData.classList.add("column");
+        var ul = document.createElement('ul');
+        for (const [metric, stats] of Object.entries(statsData)) {
+          if (metric.includes('Stats')) {
+            var li = document.createElement('li');
+            var aLeft = document.createElement('a');
+            aLeft.classList.add("left");
+            aLeft.appendChild(document.createTextNode(stats[key] ? parseFloat(stats[key].toFixed(1)).toLocaleString('en-US') : '-'));
+            // var aRight = document.createElement('a');
+            // aRight.classList.add("right");
+            // aRight.appendChild(document.createTextNode('units'));
+            li.appendChild(aLeft);
+            // li.appendChild(aRight);
+            ul.appendChild(li);
+          }
+        }
+        leanBestPeriodData.appendChild(ul)
+        allPeriodData.appendChild(leanBestPeriodData)
+      }
+    })
+  }
+  document.getElementById('allPeriodData').replaceWith(allPeriodData)
+
+
+
+
+
+  // left most column with metrics names
+  // foreach of best lean, best fat, recent lean, recent fat
+    // 5 periods with 4 cols each
+      // each col gets a header: name, start, finish, lean weight trend, fat percent trend 
+      // 4 columns: Avg Min Max StdDev
+      // rows of numbers
+
+  var all1PeriodData = document.createElement('div');
+  all1PeriodData.id = "allPeriodData";
 
   leanWeightBestDates.forEach(periodData => {
-    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
   fatPercentBestDates.forEach(periodData => {
-    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
   leanWeightRecentDates.forEach(periodData => {
-    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
   fatPercentRecentDates.forEach(periodData => {
-    allPeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    allPeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
   })
 
-  document.getElementById('periodData').replaceWith(allPeriodData)
+  document.getElementById('periodData').replaceWith(all1PeriodData)
 }
 
 function displayStatsTable(middleDate, periodDuration) {
@@ -67,23 +135,24 @@ function displayStatsTable(middleDate, periodDuration) {
 
   // Iterate through the stats data and add rows to the table
   for (const [metric, stats] of Object.entries(statsData)) {
+    var cells = []
+    const row = table.insertRow();
+
     if (metric.includes('Stats')) {
-      const row = table.insertRow();
       // Replace null with "-"
       const avg = stats.average !== null ? stats.average.toFixed(1) : "-";
       const min = stats.min !== null ? stats.min.toFixed(1) : "-";
       const max = stats.max !== null ? stats.max.toFixed(1) : "-";
       const stdDev = stats.stdDev !== null ? stats.stdDev.toFixed(1) : "-";
 
-      const cells = [metric, avg, min, max, stdDev];
-
-      // Add cells to the row
-      cells.forEach(cellData => {
-        const cell = document.createElement('td');
-        cell.textContent = cellData;
-        row.appendChild(cell);
-      });
+      cells = [metric, avg, min, max, stdDev];
     }
+    // Add cells to the row
+    cells.forEach(cellData => {
+      const cell = document.createElement('td');
+      cell.textContent = cellData;
+      row.appendChild(cell);
+    });
   }
 
   // Append the table to the body of the document
