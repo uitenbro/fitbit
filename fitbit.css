@@ -37,7 +37,7 @@
       flex:1;
       float: right;
 /*      border: 1px solid black;*/
-      width: 220px;
+      width: 200px;
       padding-right: 1em;
     }    
     a.left {
@@ -50,7 +50,7 @@
     }
     a.unit {
       text-align: right;
-      flex:0.25;
+      flex:0.33;
       float: left;
 /*      border: 1px solid black;*/
       width: 15px;

@@ -113,7 +113,7 @@ function displayPeriods() {
         leanBestPeriodData.classList.add("column");
         var ul = document.createElement('ul');
         // Add period header info to column
-        for (const info of [startDate, endDate, periodDuration, periodData.line]) {
+        for (const info of [startDate, endDate, periodDuration, periodData.line.replace(/Line/, '')]) {
           var li = document.createElement('li');
           var aLeft = document.createElement('a');
           aLeft.classList.add("left");
@@ -191,27 +191,27 @@ function displayPeriods() {
       // 4 columns: Avg Min Max StdDev
       // rows of numbers
 
-  var all1PeriodData = document.createElement('div');
-  all1PeriodData.id = "periodData";
+  // var all1PeriodData = document.createElement('div');
+  // all1PeriodData.id = "periodData";
 
-  leanWeightBestDates.forEach(periodData => {
-    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
-  })
-  fatPercentBestDates.forEach(periodData => {
-    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
-  })
-  leanWeightRecentDates.forEach(periodData => {
-    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
-  })
-  fatPercentRecentDates.forEach(periodData => {
-    all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
-    all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
-  })
+  // leanWeightBestDates.forEach(periodData => {
+  //   all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+  //   all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  // })
+  // fatPercentBestDates.forEach(periodData => {
+  //   all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+  //   all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  // })
+  // leanWeightRecentDates.forEach(periodData => {
+  //   all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+  //   all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  // })
+  // fatPercentRecentDates.forEach(periodData => {
+  //   all1PeriodData.appendChild(displayPeriodDetails(periodData.date, periodData.periodDuration))
+  //   all1PeriodData.appendChild(displayStatsTable(periodData.date, periodData.periodDuration))
+  // })
 
-  document.getElementById('periodData').replaceWith(all1PeriodData)
+  // document.getElementById('periodData').replaceWith(all1PeriodData)
 }
 
 function showHideCols(...colIds) {

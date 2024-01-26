@@ -26,6 +26,10 @@
   <br/>
   <button onclick="authenticateFitbit()">Authenticate</button>
   <button onclick="getProfile()">Get Profile</button>
+  <br/>  <br/>
+
+  <label for="period">Period (days):</label>
+  <input type="number" id="period" name="period" min="3" value="7"> 
   <button onclick="getTimeSeriesFitbitData()">Get Fitbit Data</button>
   <br/>
   <br/>
@@ -43,22 +47,21 @@
   <br/>
   <button onclick="getStepLogs(getStartDate(), getDuration())">Get Step Logs</button>
   <button onclick="getDistanceLogs(getStartDate(), getDuration())">Get Distance Logs</button>
-  <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button> -->
+  <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button>
   <br/>
-  <p>Set Up and Display Chart<p>
-  <br/>
-  <label for="period">Period (days):</label>
-  <input type="number" id="period" name="period" min="3" value="5"> 
-  <button onclick="calculateTimeSeriesDerivedData(getPeriod())">Calculate Body Weight Data</button>
+  <p>Set Up and Display Chart<p> 
+  <br/> -->
+
+ <!--  <button onclick="calculateTimeSeriesDerivedData(getPeriod())">Calculate Body Weight Data</button>
   <button onclick="sortBodyWeightTrends()">Sort Trends</button>
-  <br/>
+  <br/> -->
   <label for="startDateCharts">Chart Start Date:</label>
-  <input type="date" id="startDateCharts" name="startDateCharts" value="2022-05-02">
+  <input type="date" id="startDateCharts" name="startDateCharts" value="2021-01-24">
   <label for="endDateCharts">Chart End Date:</label>
-  <input type="date" id="endDateCharts" name="endDateCharts" value="2022-06-06">
+  <input type="date" id="endDateCharts" name="endDateCharts" value="2024-01-25">
   <button onclick="displayCharts(getStartDateCharts(), getEndDateCharts(), getPeriod())">Display Charts</button>
   <br/>
-  <button onclick="getCombinedDates()">Get Combined Dates</button>
+  <!-- <button onclick="getCombinedDates()">Get Combined Dates</button>
   <br/>
   <label for="startDateCharts">Period Mid-Point:</label>
   <input type="date" id="midPeriodDate" name="midPeriodDate" value="2024-01-12">
@@ -71,9 +74,7 @@
   <button onclick="getSleepLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Sleep Logs</button> 
   <br/>
   <p>One day at a time</p>
-  <button onclick="getPeriodMacros(expandRange({getMidPoint(),getPeriod()}))">Get Macro Logs</button> <!-- 1 day only -->
-  <br/>
-  <!-- Add more buttons for other Fitbit APIs as needed -->
+  <button onclick="getPeriodMacros(expandRange({getMidPoint(),getPeriod()}))">Get Macro Logs</button> -->
   <script>
     function setStartDate() {
       const today = new Date()
@@ -83,6 +84,7 @@
       startDateInput.valueAsDate = startDateCalc;
     }
    setStartDate() 
+
   </script>
 
 <div id="weightChartArea">
