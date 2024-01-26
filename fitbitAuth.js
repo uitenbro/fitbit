@@ -75,7 +75,7 @@ function checkFitBitAccessToken(continuationFcnName, ...continuationParameters) 
   var tokenResponse = JSON.parse(localStorage.getItem('fitbitAuthResponse'));
 
   // If no token exists perform initial authorization
-  if (tokenResponse.accessToken === null) {
+  if (tokenResponse === null || tokenResponse.accessToken === null) {
     authenticateFitbit();
   }
   // if token is expired refresh token
