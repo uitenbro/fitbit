@@ -2,7 +2,9 @@
 
 let FitbitAuth = {
   clientId: '23RM4Z', // Replace with your Fitbit app's client ID
-  redirectUri: 'https://localhost:8000', // Replace with your Fitbit app's redirect URI
+  // redirectUri: 'https://localhost:8000', // Use for development
+  //redirectUri: 'https://fitbit.uitenbroek.com', // Replace with your Fitbit app's redirect URI before pushing
+  redirectUri: window.location.origin,
   authorizationUrl: 'https://www.fitbit.com/oauth2/authorize',
   tokenUrl: 'https://api.fitbit.com/oauth2/token',
   scope: 'activity nutrition weight sleep respiratory_rate profile', // Adjust scopes based on your needs
