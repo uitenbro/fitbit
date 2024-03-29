@@ -79,11 +79,16 @@
     function setStartDate() {
       const today = new Date()
       const startDateCalc = new Date(today)
-      startDateCalc.setDate(today.getDate() - getDuration()+1);
+      startDateCalc.setDate(today.getDate() - getDuration());
       const startDateInput = document.getElementById('startDate');
       startDateInput.valueAsDate = startDateCalc;
+
+      document.getElementById('endDateCharts').value = today.toISOString().slice(0,10);
+      let date1095DaysAgo = new Date(today);
+      date1095DaysAgo.setDate(today.getDate() - 1095);
+      document.getElementById('startDateCharts').value = date1095DaysAgo.toISOString().slice(0,10);
     }
-   setStartDate() 
+    setStartDate() 
 
   </script>
 
@@ -94,7 +99,6 @@
 <canvas id="fatPercentChartArea"></canvas>
 </div>
 <div id="allPeriodData"></div>
-<div id="periodData"></div>
 
 </body>
 </html>
