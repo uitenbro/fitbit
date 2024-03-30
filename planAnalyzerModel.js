@@ -376,7 +376,7 @@ function calculateIntervalDerivedData() {
   const statsDietFat = calculateStats("diet.summary.fat", getPeriod());
   const statsDietProtein = calculateStats("diet.summary.protein", getPeriod());
   const statsDietFiber = calculateStats("diet.summary.fiber", getPeriod());
-
+  const statsSleepDuration = calculateStats("sleep.duration", getPeriod());
 
   var period = getPeriod()
   Object.keys(fitbitDatastore).forEach(date => {
@@ -394,6 +394,7 @@ function calculateIntervalDerivedData() {
     entry.trends[period].dietFatStats = statsDietFat[date];    
     entry.trends[period].dietProteinStats = statsDietProtein[date];    
     entry.trends[period].dietFiberStats = statsDietFiber[date];    
+    entry.trends[period].sleepDurationStats = statsSleepDuration[date];    
   });
   localStorage.setItem('fitbitDatastore', JSON.stringify(fitbitDatastore))
 }

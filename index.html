@@ -71,8 +71,10 @@
   <button onclick="getMinutesLightlyActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Lightly Active Logs</button>
   <button onclick="getMinutesFairlyActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Fairly Active Logs</button>
   <button onclick="getMinutesVeryActiveLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Minutes Very Active Logs</button>
-  <button onclick="getSleepLogs(getStartDateFromMidPoint(getMidPoint(), getPeriod()))">Get Sleep Logs</button> 
+  
+  <button onclick="getSleepLogs(getStartDate(), getStartDate())">Get Sleep Logs</button> 
   <br/>
+  
   <p>One day at a time</p>
   <button onclick="getPeriodMacros(expandRange({getMidPoint(),getPeriod()}))">Get Macro Logs</button> -->
   <script>

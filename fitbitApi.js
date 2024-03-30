@@ -17,6 +17,15 @@ function makeApiRequest(endpoint, method = 'GET') {
     },
   })
     .then(response => {
+      // if (!response.ok) {
+      //   console.log('response not OK')
+      //   if (response.status === 429) {
+      //     console.log('Too many requests. Please try again later.');
+      //     throw new Error('Too many requests. Please try again later.');
+      //   } else {
+      //     throw new Error('Network response was not ok');
+      //   }
+      // }
       // response.headers.forEach((value, name) => {
       //   console.log(`Header: ${name} = ${value}`);
       // });
@@ -415,7 +424,7 @@ function getSleepLogs(startDate, endDate) {
     if (checkFitBitAccessToken('getSleepLogs', Array.from(arguments))) {
       // duration = duration > 100 ? 100 : duration // limit is 100 days (actually 100 records)
       // const endDate = calculateEndDate(startDate, duration);
-      const apiUrl = `/sleep/date/${startDate}/${endDate}.json`;
+      const apiUrl = `sleep/date/${startDate}/${endDate}.json`;
       makeApiRequest(apiUrl)
         .then(data => {
           handleSleepLogs(data)
@@ -432,6 +441,26 @@ function getSleepLogs(startDate, endDate) {
 // Function to handle sleep log data
 function handleSleepLogs(data) {
   console.log('Sleep log data:', data);
+  data['sleep'].forEach(entry => {
+    const date = entry.dateOfSleep;
+    const duration = parseInt(entry.duration)/1000/60/60; // Convert the value to a numeric type if needed (msec to hrs)
+    const efficiency = parseInt(entry.efficiency); // Convert the value to a numeric type if needed
+    const bedTime = entry.startTime; // Convert the value to a numeric type if needed
+    const timeInBed = parseInt(entry.timeInBed)/60 ; // Convert the value to a numeric type if needed (min to hrs)
+
+    var sleep = {duration : duration,
+                efficiency : efficiency,
+                bedTime : bedTime,
+                timeInBed : timeInBed}
+
+    // Check if the date entry already exists in the datastore object
+    if (!fitbitDatastore[date]) {
+      fitbitDatastore[date] = {sleep : sleep};
+    } else {
+      // Update the existing entry
+      fitbitDatastore[date].sleep = sleep;
+    }
+  });  
 }
 
 // Function to get food log from API for a specific date
