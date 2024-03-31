@@ -177,12 +177,25 @@ function displayPeriods() {
         // li.appendChild(aRight);
         ul.appendChild(li);
         // Add period input statistics that is specific to this column
+        var totalCalories = 0;
         for (const [metric, stats] of Object.entries(statsData)) {
           if (metric.includes('Stats')) {
+            var text = stats[key] ? parseFloat(stats[key].toFixed(1)).toLocaleString('en-US') : '-';
+            if (metric.includes('dietCalories')) {
+              if (stats.average != 0) {
+                totalCalories = stats.average;
+              }
+            }
+            if ((metric.includes('dietCarbs') || metric.includes('dietProtein')) && totalCalories) {
+              text = text + ' (' + parseFloat((stats[key]*4/totalCalories*100).toFixed(0)).toLocaleString('en-US') + '%)';
+            }
+            if (metric.includes('dietFat') && totalCalories) {
+              text = text + ' (' + parseFloat((stats[key]*9/totalCalories*100).toFixed(0)).toLocaleString('en-US') + '%)';
+            }
             var li = document.createElement('li');
             var aLeft = document.createElement('a');
             aLeft.classList.add("left");
-            aLeft.appendChild(document.createTextNode(stats[key] ? parseFloat(stats[key].toFixed(1)).toLocaleString('en-US') : '-'));
+            aLeft.appendChild(document.createTextNode(text));
             // var aRight = document.createElement('a');
             // aRight.classList.add("right");
             // aRight.appendChild(document.createTextNode('units'));
