@@ -7,8 +7,11 @@ function makeApiRequest(endpoint, method = 'GET') {
   // Assumes call to checkFitbitAccessToken is completed before this to ensure valid token
   const accessToken = getFitbitAccessToken();
   const url = `${FitbitApiUrl}${endpoint}`;
+  // Point to your local proxy instead of Fitbit directly
+  //const proxyUrl = `http://localhost:3000/fitbit?path=${encodeURIComponent(endpoint)}`;
+  const proxyUrl = `https://r7grxpwysd.execute-api.us-east-1.amazonaws.com/Prod/fitbit?path=${encodeURIComponent(endpoint)}`;
 
-  return fetch(url, {
+  return fetch(proxyUrl, {
     method: method,
     headers: {
       'Authorization': `Bearer ${accessToken}`,

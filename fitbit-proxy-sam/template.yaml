@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Fitbit Proxy API
+
+Resources:
+  FitbitProxyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      Timeout: 10
+      Events:
+        FitbitApi:
+          Type: Api
+          Properties:
+            Path: /fitbit
+            Method: ANY
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL for Fitbit Proxy"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/fitbit"

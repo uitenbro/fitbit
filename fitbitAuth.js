@@ -41,18 +41,18 @@ function handleAuthenticateFitbit() {
       userId: hashParams.user_id
     }
     // Get the previous Auth Token from storage 
-    var prevAuthResponse = JSON.parse(localStorage.getItem('fitbitAuthResponse'));
+    var prevAuthResponse = (storage.get('fitbitAuthResponse'));
     // If there is a previous token 
     if (prevAuthResponse) {
       // If this token is different than the previous one update the token and expiration
       if (authResponse.accessToken !== prevAuthResponse.accessToken) {
         // store the new token response      
-        localStorage.setItem('fitbitAuthResponse', JSON.stringify(authResponse));
+        storage.set('fitbitAuthResponse', (authResponse));
         console.log('Stored new access token');
       }
     }
     else { // No previous auth token found so store this token response
-      localStorage.setItem('fitbitAuthResponse', JSON.stringify(authResponse));
+      storage.set('fitbitAuthResponse', (authResponse));
       console.log('Stored initial access token');
     }
   }
@@ -61,20 +61,20 @@ function handleAuthenticateFitbit() {
   }
 
   // Continue execution where we left off if there is a stored state
-  if (localStorage.getItem('state') !== null) {
+  if (storage.get('state') !== null) {
     parseStoredStateAndExecuteFunction();
     // Clear state
-    localStorage.removeItem('state')
+    storage.remove('state')
   }
 }
 
 function getFitbitAccessToken() {
-  var tokenResponse = JSON.parse(localStorage.getItem('fitbitAuthResponse'));
+  var tokenResponse = (storage.get('fitbitAuthResponse'));
   return tokenResponse.accessToken
 }
 
 function checkFitBitAccessToken(continuationFcnName, ...continuationParameters) {
-  var tokenResponse = JSON.parse(localStorage.getItem('fitbitAuthResponse'));
+  var tokenResponse = (storage.get('fitbitAuthResponse'));
 
   // If no token exists perform initial authorization
   if (tokenResponse === null || tokenResponse.accessToken === null) {
@@ -102,13 +102,13 @@ function storeFunctionInfoInlocalStorage(functionName, ...parameters) {
   const stateString = JSON.stringify(stateObject);
 
   // Store the state in localStorage
-  localStorage.setItem('state', stateString);
+  storage.set('state', stateString);
 }
 
 // Function to parse stored state and execute the corresponding function
 function parseStoredStateAndExecuteFunction() {
   // Retrieve state from localStorage
-  const stateString = localStorage.getItem('state');
+  const stateString = storage.get('state');
 
   // Check if state is present and parse it
   if (stateString) {
@@ -122,7 +122,7 @@ function parseStoredStateAndExecuteFunction() {
       // Execute the corresponding function with the parameters
       executeFunctionByName(functionName, parameters);
       // Remove the stored state
-      localStorage.removeItem('state');
+      storage.remove('state');
     } catch (error) {
       console.error('Error parsing stored state:', error);
     }

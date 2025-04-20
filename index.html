@@ -10,7 +10,7 @@
   <!-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> -->
 
   <title>Fitbit API Example</title>
-
+  <script src="storage.js"></script>
   <script src="fitbitAuth.js"></script>
   <script src="fitbitApi.js"></script> 
   <script src="planAnalyzerModel.js"></script> 
@@ -39,7 +39,7 @@
   <label for="startDate">Start Date:</label>
   <input type="date" id="startDate" name="startDate">
   <br/>
- <!--  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
+  <button onclick="getWeightLogs(getStartDate(), getDuration())">Get Weight Logs</button>
   <button onclick="getFatPercentLogs(getStartDate(), getDuration())">Get Body Fat Percent Logs</button>
   <br/>
   <button onclick="getCaloriesOutLogs(getStartDate(), getDuration())">Get Calories Out Logs</button>
@@ -50,11 +50,11 @@
   <button onclick="getCaloriesInLogs(getStartDate(), getDuration())">Get Calories In Logs</button>
   <br/>
   <p>Set Up and Display Chart<p> 
-  <br/> -->
+  <br/>
 
- <!--  <button onclick="calculateTimeSeriesDerivedData(getPeriod())">Calculate Body Weight Data</button>
+  <button onclick="calculateTimeSeriesDerivedData(getPeriod())">Calculate Body Weight Data</button>
   <button onclick="sortBodyWeightTrends()">Sort Trends</button>
-  <br/> -->
+  <br/>
   <label for="startDateCharts">Chart Start Date:</label>
   <input type="date" id="startDateCharts" name="startDateCharts" value="2021-01-24">
   <label for="endDateCharts">Chart End Date:</label>

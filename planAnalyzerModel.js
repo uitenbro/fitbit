@@ -1,5 +1,8 @@
 // planAnalyzerModel.js
 
+const localDataStore = {}; // your in-app memory store
+storage.init(localDataStore); // bind it once during startup
+
 var fitbitDatastore = {};
 var fatPercentBestDates = [];
 var leanWeightBestDates = [];
