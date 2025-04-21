@@ -120,6 +120,8 @@ function createCombinedChart(datastore, startDate, endDate, period, bestDatesArr
       datasets: datasets,
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
         x: {
           type: 'time',

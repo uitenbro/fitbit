@@ -1,5 +1,22 @@
     
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
+#weightChartArea {
+  width: 100vw;
+  height: 100vh; /* or use 100dvh for better mobile support */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
     .container {
       display: flex;
     }
