@@ -6,9 +6,17 @@ function makeApiRequest(endpoint, method = 'GET') {
 
   // Assumes call to checkFitbitAccessToken is completed before this to ensure valid token
   const accessToken = getFitbitAccessToken();
-  const url = `${FitbitApiUrl}${endpoint}`;
-  // Point to your local proxy instead of Fitbit directly
+  
+  // URL of the Fitbit API endpoint (if not using a proxy)
+  // const url = `${FitbitApiUrl}${endpoint}`;
+
+  // Point to your local python proxy instead of Fitbit directly for development
+  // const proxyUrl = `https://localhost:3000/fitbit?path=${encodeURIComponent(endpoint)}`;
+  
+  // Point to your local LAMABDA proxy instead of Fitbit directly for development
   //const proxyUrl = `http://localhost:3000/fitbit?path=${encodeURIComponent(endpoint)}`;
+
+  // Production AWS Lamba proxy URL
   const proxyUrl = `https://r7grxpwysd.execute-api.us-east-1.amazonaws.com/Prod/fitbit?path=${encodeURIComponent(endpoint)}`;
 
   return fetch(proxyUrl, {

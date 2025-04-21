@@ -330,31 +330,70 @@ function getFitbitIntervalData() {
   const functionCalls = [];
 
   // Collect function calls to get all missing minute data  
+  // if (missingMinuteRanges) {
+  //   functionCalls.push(...missingMinuteRanges.map(range => getMinutesSedentaryLogs(range.startDate, range.endDate)));
+  //   functionCalls.push(...missingMinuteRanges.map(range => getMinutesLightlyActiveLogs(range.startDate, range.endDate)));
+  //   functionCalls.push(...missingMinuteRanges.map(range => getMinutesFairlyActiveLogs(range.startDate, range.endDate)));
+  //   functionCalls.push(...missingMinuteRanges.map(range => getMinutesVeryActiveLogs(range.startDate, range.endDate)));
+  //   functionCalls.push(...missingMinuteRanges.map(range => getSleepLogs(range.startDate, range.endDate)));
+  // }
+  // // Add call for macros if necessary
+  // if (missing.missingDietDates.length) {
+  //   functionCalls.push(getPeriodMacros(missing.missingDietDates));
+  // }
+
   if (missingMinuteRanges) {
-    functionCalls.push(...missingMinuteRanges.map(range => getMinutesSedentaryLogs(range.startDate, range.endDate)));
-    functionCalls.push(...missingMinuteRanges.map(range => getMinutesLightlyActiveLogs(range.startDate, range.endDate)));
-    functionCalls.push(...missingMinuteRanges.map(range => getMinutesFairlyActiveLogs(range.startDate, range.endDate)));
-    functionCalls.push(...missingMinuteRanges.map(range => getMinutesVeryActiveLogs(range.startDate, range.endDate)));
-    functionCalls.push(...missingMinuteRanges.map(range => getSleepLogs(range.startDate, range.endDate)));
+    functionCalls.push(...missingMinuteRanges.map(range => () =>
+      getMinutesSedentaryLogs(range.startDate, range.endDate)
+    ));
+  
+    functionCalls.push(...missingMinuteRanges.map(range => () =>
+      getMinutesLightlyActiveLogs(range.startDate, range.endDate)
+    ));
+  
+    functionCalls.push(...missingMinuteRanges.map(range => () =>
+      getMinutesFairlyActiveLogs(range.startDate, range.endDate)
+    ));
+  
+    functionCalls.push(...missingMinuteRanges.map(range => () =>
+      getMinutesVeryActiveLogs(range.startDate, range.endDate)
+    ));
+  
+    functionCalls.push(...missingMinuteRanges.map(range => () =>
+      getSleepLogs(range.startDate, range.endDate)
+    ));
   }
+  
   // Add call for macros if necessary
   if (missing.missingDietDates.length) {
-    functionCalls.push(getPeriodMacros(missing.missingDietDates));
+    functionCalls.push(() => getPeriodMacros(missing.missingDietDates));
   }
+  
 
   // If there is missing data make the requests
   // console.log(`Need to make ${functionCalls.length} function calls`)
+  // if (functionCalls.length) {
+  //   // Fetch Fitbit data and populate the fitbitDatastore then complete the calculations and display
+  //   Promise.all(functionCalls)
+  //   .then(() => {
+  //     console.log('All interval requests completed successfully');
+  //     calculateIntervalDerivedData()
+  //     displayPeriods()
+  //   })
+  //   .catch(error => {
+  //     console.error('Error in one or more operations:', error);
+  //   });
+  // }
   if (functionCalls.length) {
-    // Fetch Fitbit data and populate the fitbitDatastore then complete the calculations and display
-    Promise.all(functionCalls)
-    .then(() => {
-      console.log('All interval requests completed successfully');
-      calculateIntervalDerivedData()
-      displayPeriods()
-    })
-    .catch(error => {
-      console.error('Error in one or more operations:', error);
-    });
+    runThrottled(functionCalls)
+      .then(() => {
+        console.log('All interval requests completed successfully');
+        calculateIntervalDerivedData();
+        displayPeriods();
+      })
+      .catch(error => {
+        console.error('Error during throttled execution:', error);
+      });
   }
   else {
     console.log("No new interval or macro data to fetch using local data");
@@ -403,14 +442,17 @@ function calculateIntervalDerivedData() {
 }
 
 function getPeriodMacros(datesToRequest) {
-  // Collect function calls to get all macro data
-  const macroDataRequests = datesToRequest.map(dateString => getMacroLogs(dateString));
+  const macroDataRequests = datesToRequest.map(dateString => () =>
+    getMacroLogs(dateString)
+  );
 
-  Promise.all(macroDataRequests)
-    .then(results => {
+  return runThrottled(macroDataRequests, 300)
+    .then(() => {
       calculateMacroDerivedData();
     })
-    .catch(error => console.log("Error receiveing macro data"))
+    .catch(error => {
+      console.log("Error receiving macro data:", error);
+    });
 }
 
 function calculateMacroDerivedData() {
@@ -469,28 +511,57 @@ function getCombinedDates() {
   const sortedUniqueFoodDateStrings = [...new Set(missingDietDateStrings)].sort();
 
   // Calculate the minimum number of 100-day ranges
+  // const missingMinRanges = [];
+  // let currentRange = { startDate: sortedUniqueMinDateStrings[0], endDate: sortedUniqueMinDateStrings[0] };
+
+  // for (let i = 1; i < sortedUniqueMinDateStrings.length; i++) {
+  //   const currentDate = new Date(sortedUniqueMinDateStrings[i]);
+  //   const previousDate = new Date(sortedUniqueMinDateStrings[i - 1]);
+
+  //   // Check if the difference between current and previous dates is greater than 100 days
+  //   if ((currentDate - previousDate) / (1000 * 60 * 60 * 24) > 100) {
+  //     missingMinRanges.push(currentRange);
+  //     currentRange = { startDate: sortedUniqueMinDateStrings[i], endDate: sortedUniqueMinDateStrings[i] };
+  //   } 
+  //   else {
+  //     currentRange.endDate = sortedUniqueMinDateStrings[i];
+  //   }
+  // }
+
+  // // Push the last range if dates are defined
+  // if (currentRange.startDate && currentRange.endDate) {
+  //   missingMinRanges.push(currentRange);
+  // }
+  
   const missingMinRanges = [];
+
+  // Safeguard against empty or invalid input
+  if (!Array.isArray(sortedUniqueMinDateStrings) || sortedUniqueMinDateStrings.length === 0) {
+    return { missingDietDates: sortedUniqueFoodDateStrings, missingMinuteRanges: [] };
+  }
+  
   let currentRange = { startDate: sortedUniqueMinDateStrings[0], endDate: sortedUniqueMinDateStrings[0] };
 
   for (let i = 1; i < sortedUniqueMinDateStrings.length; i++) {
     const currentDate = new Date(sortedUniqueMinDateStrings[i]);
-    const previousDate = new Date(sortedUniqueMinDateStrings[i - 1]);
+    const startDate = new Date(currentRange.startDate);
+    const daysInRange = (currentDate - startDate) / (1000 * 60 * 60 * 24);
 
-    // Check if the difference between current and previous dates is greater than 100 days
-    if ((currentDate - previousDate) / (1000 * 60 * 60 * 24) > 100) {
+    if (daysInRange > 100) {
+      // Push the current range and start a new one
       missingMinRanges.push(currentRange);
       currentRange = { startDate: sortedUniqueMinDateStrings[i], endDate: sortedUniqueMinDateStrings[i] };
-    } 
-    else {
+    } else {
+      // Extend the range
       currentRange.endDate = sortedUniqueMinDateStrings[i];
     }
   }
 
-  // Push the last range if dates are defined
-  if (currentRange.startDate && currentRange.endDate) {
+  // Push the final range
+  if (currentRange) {
     missingMinRanges.push(currentRange);
   }
-  
+
   // Return the results
   return { missingDietDates : sortedUniqueFoodDateStrings, missingMinuteRanges : missingMinRanges };
 }
@@ -518,4 +589,18 @@ function expandRange(dateObject) {
   }
   //console.log(dateStrings)
   return dateStrings;
+}
+async function runThrottled(requestFns, delay = 300) {
+  const results = [];
+  for (const fn of requestFns) {
+    try {
+      const result = await fn();
+      results.push(result);
+      await new Promise(resolve => setTimeout(resolve, delay)); // throttle
+    } catch (err) {
+      console.error("Error in throttled request:", err);
+      results.push(null);
+    }
+  }
+  return results;
 }

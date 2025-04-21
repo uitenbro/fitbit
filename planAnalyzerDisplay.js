@@ -327,6 +327,10 @@ function getStartDate() {
 function getDuration() {
   return parseInt(document.getElementById('duration').value, 10);
 }
+// Function to get duration from the input
+function getChartDuration() {
+  return parseInt(document.getElementById('durationChart').value, 10);
+}
 // Function to get period from the input
 function getPeriod() {
   return parseInt(document.getElementById('period').value, 10);

@@ -1,0 +1,79 @@
+# 🛠 Fitbit Proxy Development Environment Setup
+
+A short refresher for setting up your dev environment to troubleshoot or develop your Fitbit proxy using both:
+- A **local Python HTTPS proxy**
+- The **AWS Lambda + API Gateway simulation** via `sam local start-api`
+
+---
+
+## ✅ Part 1: Local Python HTTPS Proxy
+
+### 🔹 Prerequisites:
+- Python 3
+- `localhost.pem` and `localhost-key.pem` SSL cert/key files
+
+### 🔹 Run the proxy:
+
+```bash
+python3 fitbitProxy.py
+```
+
+---
+
+## ✅ Part 2: Local AWS Lambda Simulation with SAM
+
+### 🔹 Prerequisites:
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
+- Docker running
+
+### 🔹 Setup
+
+1. **Clone your `fitbit-proxy-sam` project**
+
+2. Ensure your `template.yaml` has:
+```yaml
+Events:
+  FitbitApi:
+    Type: Api
+    Properties:
+      Path: /fitbit
+      Method: ANY
+```
+
+3. **Your Lambda function (`lambda_function.py`)** must handle:
+   - `OPTIONS` with proper CORS headers
+   - `GET` forwarding to Fitbit
+   - Error cases with `error_response()`
+
+4. **Run locally**:
+
+```bash
+sam build
+sam local start-api
+```
+
+The proxy is now live at:
+```
+http://127.0.0.1:3000/fitbit?path=1/user/-/profile.json
+```
+
+Test with:
+```bash
+curl -i -X OPTIONS "http://127.0.0.1:3000/fitbit?path=..." \
+  -H "Origin: https://localhost:8000" \
+  -H "Access-Control-Request-Method: GET" \
+  -H "Access-Control-Request-Headers: authorization,accept-language,accept-locale"
+```
+
+---
+
+### 🧪 Pro Tip: Switching Between Proxies
+```
+   https://localhost:3000/fitbit  // Local Python proxy
+   http://localhost:3000/fitbit  // Local LABMDA proxy
+   https://r7grxpwysd.execute-api.us-east-1.amazonaws.com/Prod/fitbit  // AWS LAMBDA Production
+```
+
+---
+
